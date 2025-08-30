@@ -1,5 +1,5 @@
 plugins {
-    id 'fml-loom' version "${loom_version}"
+    id 'fml-loom' version "0.1.local"
     id 'maven-publish'
 }
 
@@ -20,7 +20,7 @@ repositories {
     maven {
         name = "Spongepowered"
         url = "https://repo.spongepowered.org/repository/maven-public/"
-    }
+    }//Dependency library(FastUtil, Gson, etc) download source
 }
 
 loom {
