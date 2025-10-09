@@ -1,5 +1,6 @@
 package com.yiranmushroom.mixin;
 
+import com.yiranmushroom.scripting.ScriptingEngine;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MinecraftServerMixin {
 	@Inject(at = @At("HEAD"), method = "loadAllWorlds")
 	private void init(CallbackInfo info) {
-		// This code is injected into the start of MinecraftServer.loadWorld()V
+		// Must wait for scripting engine finish initialization
+        ScriptingEngine.getInstance(); // Initialize the scripting engine
 	}
 }

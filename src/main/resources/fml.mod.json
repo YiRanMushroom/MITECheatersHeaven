@@ -1,35 +1,38 @@
 {
-	"schemaVersion": 1,
-	"id": "mite-cheaters-heaven",
-	"version": "${version}",
-	"name": "MITE Cheater's Heaven",
-	"description": "This mod add many configurations to make the game easier.",
-	"authors": [
-      "Yiran",
-      "Yiyun"
-	],
-	"contact": {
-		"homepage": "https://minecraftistooeasy.github.io/",
-		"sources": "https://github.com/MinecraftIsTooEasy/fish-example-mod"
-	},
-	"license": "CC0-1.0",
-	"icon": "assets/mite-cheaters-heaven/icon.png",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"com.yiranmushroom.MITECheatersHeaven"
-		]
-	},
-	"mixins": [
-		"mite-cheaters-heaven.mixins.json"
-	],
-	"depends": {
-		"fishmodloader": ">=3.4.0",
-		"minecraft": "1.6.4-mite",
-		"java": ">=17",
-		"rusted_iron_core": ">=1.3.5"
-	},
-	"suggests": {
-		"another-mod": "*"
-	}
+  "schemaVersion": 1,
+  "id": "mite-cheaters-heaven",
+  "version": "${version}",
+  "name": "MITE Cheater's Heaven",
+  "description": "This mod add many configurations to make the game easier.",
+  "authors": [
+    "Yiran",
+    "Yiyun"
+  ],
+  "contact": {
+    "homepage": "https://minecraftistooeasy.github.io/",
+    "sources": "https://github.com/MinecraftIsTooEasy/fish-example-mod"
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/mite-cheaters-heaven/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.yiranmushroom.MITECheatersHeaven"
+    ],
+    "modmenu": [
+      "com.yiranmushroom.MITECheatersHeavenModMenu"
+    ]
+  },
+  "mixins": [
+    "mite-cheaters-heaven.mixins.json"
+  ],
+  "depends": {
+    "fishmodloader": ">=3.4.0",
+    "minecraft": "1.6.4-mite",
+    "java": ">=17",
+    "rusted_iron_core": ">=1.3.5"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
 }

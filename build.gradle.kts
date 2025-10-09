@@ -18,6 +18,8 @@ val window_height: String by project
 val minecraft_version: String by project
 val rusted_iron_core_version: String by project
 val mod_id: String by project
+val manylib_version: String by project
+val modmenu_version: String by project
 
 val archives_base_name = mod_id // Set archives_base_name to mod_id
 
@@ -35,6 +37,7 @@ repositories {
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
     mavenLocal() // for local files
+    mavenCentral()
     maven {
         name = "Spongepowered"
         url = uri("https://repo.spongepowered.org/repository/maven-public/")
@@ -71,6 +74,16 @@ dependencies {
 
     // Rusted_Iron_Core API. This is technically optional, but you probably want it anyway.
     implementation(files("libs/RustedIronCore-$rusted_iron_core_version.jar"))
+    implementation(files("libs/ManyLib-$manylib_version.jar"))
+    implementation(files("libs/ModMenu-$modmenu_version.jar"))
+
+    // This could be really stupid
+    // 1. The core scripting engine for standard .kts files. This is the "compiler".
+//    implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.9.23")
+
+    implementation("org.jetbrains.kotlin:kotlin-scripting-common")
+    implementation("org.jetbrains.kotlin:kotlin-scripting-jvm")
+    implementation("org.jetbrains.kotlin:kotlin-scripting-jvm-host")
 }
 
 tasks.withType<ProcessResources> {
