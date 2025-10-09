@@ -1,26 +1,27 @@
 {
 	"schemaVersion": 1,
-	"id": "modid",
+	"id": "mite-cheaters-heaven",
 	"version": "${version}",
-	"name": "Example mod",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "MITE Cheater's Heaven",
+	"description": "This mod add many configurations to make the game easier.",
 	"authors": [
-		"Me!"
+      "Yiran",
+      "Yiyun"
 	],
 	"contact": {
 		"homepage": "https://minecraftistooeasy.github.io/",
 		"sources": "https://github.com/MinecraftIsTooEasy/fish-example-mod"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/modid/icon.png",
+	"icon": "assets/mite-cheaters-heaven/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.example.ExampleMod"
+			"com.yiranmushroom.MITECheatersHeaven"
 		]
 	},
 	"mixins": [
-		"modid.mixins.json"
+		"mite-cheaters-heaven.mixins.json"
 	],
 	"depends": {
 		"fishmodloader": ">=3.4.0",

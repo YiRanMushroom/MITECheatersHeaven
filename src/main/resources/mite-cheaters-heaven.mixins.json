@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.yiranmushroom.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "target": "DEFAULT",
+  "mixins": [
+    "MinecraftServerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+	}
+}

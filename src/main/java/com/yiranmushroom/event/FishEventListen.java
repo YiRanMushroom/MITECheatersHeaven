@@ -1,4 +1,4 @@
-package com.example.event;
+package com.yiranmushroom.event;
 
 import com.google.common.eventbus.Subscribe;
 import net.xiaoyu233.fml.reload.event.ItemRegistryEvent;
