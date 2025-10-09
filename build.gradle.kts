@@ -1,16 +1,5 @@
-import kotlinx.metadata.internal.metadata.deserialization.VersionRequirementTable.Companion.create
-import net.fabricmc.loom.api.ModSettings
-
-plugins {
-    id("fml-loom") version "0.1.local"
-    `maven-publish`
-    kotlin("jvm") version "1.9.23" // Added for Kotlin language support
-}
-
-// Define properties from gradle.properties for type-safe access
 val mod_version: String by project
 val maven_group: String by project
-//var archives_base_name: String by project
 val loader_version: String by project
 val user_name: String by project
 val window_width: String by project
@@ -20,44 +9,34 @@ val rusted_iron_core_version: String by project
 val mod_id: String by project
 val manylib_version: String by project
 val modmenu_version: String by project
+val kotlin_version: String by project
 
-val archives_base_name = mod_id // Set archives_base_name to mod_id
+plugins {
+    id("fml-loom") version "0.1.local"
+    kotlin("jvm") version "2.2.10"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    `maven-publish`
+}
+
+
 
 version = mod_version
 group = maven_group
-
-base {
-    archivesName.set(archives_base_name)
-}
+base { archivesName.set(mod_id) }
 
 repositories {
-    // Add repositories to retrieve artifacts from in here.
-    // You should only use this when depending on other mods because
-    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-    // for more information about repositories.
-    mavenLocal() // for local files
+    mavenLocal()
     mavenCentral()
-    maven {
-        name = "Spongepowered"
-        url = uri("https://repo.spongepowered.org/repository/maven-public/")
-    }//Dependency library(FastUtil, Gson, etc) download source
+    maven("https://repo.spongepowered.org/repository/maven-public/")
 }
 
 loom {
     accessWidenerPath.set(file("src/main/resources/$mod_id.accesswidener"))
     mergedMinecraftJar()
-    //latest fishmodloader https://github.com/MinecraftIsTooEasy/FishModLoader/releases/latest
     setFML(File("libs/FishModLoader-v$loader_version.jar"))
     mods {
-        val modid by creating {
-            sourceSet(sourceSets.main.get())
-//            sourceSet(sourceSets.client.get())
-//            sourceSet(sourceSets.server.get())
-            //For modules in the ’src‘ directory, only the main module is required by default
-        }
+        create(mod_id) { sourceSet(sourceSets.main.get()) }
     }
-
 }
 
 tasks.named<JavaExec>("runClient") {
@@ -65,30 +44,34 @@ tasks.named<JavaExec>("runClient") {
 }
 
 dependencies {
-    // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:$minecraft_version")
     mappings(loom.fmlMCPMappings())
     implementation(files(loom.getFML().toPath()))
     implementation("it.unimi.dsi:fastutil:8.5.12")
     implementation("com.google.code.gson:gson:2.11.0")
-
-    // Rusted_Iron_Core API. This is technically optional, but you probably want it anyway.
     implementation(files("libs/RustedIronCore-$rusted_iron_core_version.jar"))
     implementation(files("libs/ManyLib-$manylib_version.jar"))
     implementation(files("libs/ModMenu-$modmenu_version.jar"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
+    implementation("org.jetbrains.kotlin:kotlin-scripting-common:$kotlin_version")
+    implementation("org.jetbrains.kotlin:kotlin-scripting-jvm:$kotlin_version")
+    implementation("org.jetbrains.kotlin:kotlin-scripting-jvm-host:$kotlin_version")
+//    implementation("org.jetbrains.kotlin:kotlin-script-runtime:$kotlin_version")
 
-    // This could be really stupid
-    // 1. The core scripting engine for standard .kts files. This is the "compiler".
-//    implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.9.23")
+//    implementation("org.jetbrains.kotlin:kotlin-scripting-jsr223:$kotlin_version")
+//    implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlin_version")
+//    implementation("org.jetbrains.kotlin:kotlin-scripting-dependencies:$kotlin_version")
+//    implementation("org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:$kotlin_version")
+//    implementation("org.jetbrains.kotlin:kotlin-scripting-compiler-impl:$kotlin_version")
+//    implementation("org.jetbrains.kotlin:kotlin-compiler:$kotlin_version")
 
-    implementation("org.jetbrains.kotlin:kotlin-scripting-common")
-    implementation("org.jetbrains.kotlin:kotlin-scripting-jvm")
-    implementation("org.jetbrains.kotlin:kotlin-scripting-jvm-host")
+    // coroutine
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 }
 
 tasks.withType<ProcessResources> {
     inputs.property("version", project.version)
-
     filesMatching("fml.mod.json") {
         expand(mapOf("version" to project.version))
     }
@@ -99,37 +82,46 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 java {
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
     withSourcesJar()
-
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
 
 tasks.withType<Jar> {
     inputs.property("archivesName", base.archivesName.get())
+    from("LICENSE") { rename { "${it}_${inputs.properties["archivesName"]}" } }
+}
 
-    from("LICENSE") {
-        rename { "${it}_${inputs.properties["archivesName"]}"}
+tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+    archiveClassifier.set("")
+    mergeServiceFiles()
+
+    from(zipTree(file("libs/trove.jar")))
+
+    dependencies {
+        include(dependency("org.jetbrains.kotlin:kotlin-stdlib"))
+        include(dependency("org.jetbrains.kotlin:kotlin-reflect"))
+        include(dependency("org.jetbrains.kotlin:kotlin-scripting-common"))
+        include(dependency("org.jetbrains.kotlin:kotlin-scripting-jvm"))
+        include(dependency("org.jetbrains.kotlin:kotlin-scripting-jvm-host"))
+//        include(dependency("org.jetbrains.kotlin:kotlin-script-runtime"))
+
+//        include(dependency("org.jetbrains.kotlin:kotlin-scripting-jsr223"))
+//        include(dependency("org.jetbrains.kotlin:kotlin-compiler-embeddable"))
+//        include(dependency("org.jetbrains.kotlin:kotlin-scripting-dependencies"))
+//        include(dependency("org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable"))
+//        include(dependency("org.jetbrains.kotlin:kotlin-scripting-compiler-impl"))
+//        include(dependency("org.jetbrains.kotlin:kotlin-compiler"))
+
+        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core"))
     }
 }
 
-// configure the maven publication
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
-            artifactId = archives_base_name
+            artifactId = mod_id
             from(components["java"])
         }
-    }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-        // Notice: This block does NOT have the same function as the block in the top level.
-        // The repositories here will be used for publishing your artifact, not for
-        // retrieving dependencies.
     }
 }

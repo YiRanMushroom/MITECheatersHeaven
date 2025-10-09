@@ -6,6 +6,7 @@ import fi.dy.masa.malilib.config.ConfigManager
 import fi.dy.masa.malilib.event.InitializationHandler
 import net.fabricmc.api.ModInitializer
 import net.xiaoyu233.fml.ModResourceManager
+//import net.xiaoyu233.fml.ModResourceManager
 import net.xiaoyu233.fml.reload.event.MITEEvents
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
