@@ -2,7 +2,6 @@ package com.yiranmushroom.scripting
 
 import com.yiranmushroom.MITECheatersHeaven.Companion.LOGGER
 import java.io.File
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -75,10 +74,33 @@ class ScriptingEngine private constructor() {
     private fun loadScriptsFrom(scriptDir: File) {
         val classpath = System.getProperty("java.class.path")
         val classpathFiles = classpath.split(File.pathSeparator).map { File(it) }
-        val allDeps = classpathFiles.filter { it.exists() }
+
+        val classLoaderJars = generateSequence(ClassLoader.getSystemClassLoader()) { it.parent }
+            .filterIsInstance<java.net.URLClassLoader>()
+            .flatMap { it.urLs.asSequence() }
+            .mapNotNull { runCatching { File(it.toURI()) }.getOrNull() }
+            .filter { it.exists() && it.extension == "jar" }
+            .toList()
+
+        fun findAllJars(dir: File): List<File> =
+            if (dir.exists() && dir.isDirectory)
+                dir.walkTopDown().filter { it.isFile && it.extension == "jar" }.toList()
+            else emptyList()
+
+        val modsJars = findAllJars(File("mods"))
+        val fmlJars = File(".").walkTopDown()
+            .filter { it.isDirectory && it.name.endsWith(".fml") }
+            .flatMap { findAllJars(it) }
+            .toList()
+
+        val allDeps = (classpathFiles + classLoaderJars + modsJars + fmlJars).distinct().filter { it.exists() }
+
+        LOGGER.info("Collected ${allDeps.size} dependencies for script compilation. They are: ${allDeps.joinToString(", ") { it.name }}")
+
         val compilationConfiguration = ScriptCompilationConfiguration {
             dependencies(JvmDependency(allDeps))
         }
+
         val host = BasicJvmScriptingHost()
 
         val scriptFiles = scriptDir.walkTopDown()
@@ -98,12 +120,14 @@ class ScriptingEngine private constructor() {
                         if (result.reports.isNotEmpty()) {
                             result.reports.forEach {
                                 val severity = it.severity
-                                val message = "Diagnostic from script '${scriptFile.name}': ${severity} - ${it.message} at ${it.location}"
+                                val message =
+                                    "Diagnostic from script '${scriptFile.name}': ${severity} - ${it.message} at ${it.location}"
                                 when {
                                     severity >= ScriptDiagnostic.Severity.ERROR -> {
                                         LOGGER.error(message)
                                         hasErrors = true
                                     }
+
                                     severity >= ScriptDiagnostic.Severity.WARNING -> LOGGER.warn(message)
                                     else -> LOGGER.info(message)
                                 }
