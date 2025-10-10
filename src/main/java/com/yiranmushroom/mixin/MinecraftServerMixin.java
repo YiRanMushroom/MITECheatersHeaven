@@ -12,6 +12,6 @@ public class MinecraftServerMixin {
 	@Inject(at = @At("HEAD"), method = "loadAllWorlds")
 	private void init(CallbackInfo info) {
 		// Must wait for scripting engine finish initialization
-        ScriptingEngine.getInstance(); // Initialize the scripting engine
+        ScriptingEngine.waitForInitialization();
 	}
 }

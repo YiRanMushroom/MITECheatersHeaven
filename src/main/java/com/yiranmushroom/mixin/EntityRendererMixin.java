@@ -2,6 +2,7 @@ package com.yiranmushroom.mixin;
 
 import com.yiranmushroom.mixin_helper.NightVision;
 import net.minecraft.EntityRenderer;
+import net.minecraft.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,12 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EntityRenderer.class)
 public class EntityRendererMixin {
-    @Redirect(method = "updateLightmap", at = @At(value = "INVOKE", target = "Lnet/minecraft/EntityClientPlayerMP;isPotionActive(Lnet/minecraft/Potion;)Z"))
-    private boolean red$isNightVision(net.minecraft.EntityClientPlayerMP player, net.minecraft.Potion potion) {
-        if (potion == net.minecraft.Potion.nightVision) {
-            return NightVision.getEnabled() || player.isPotionActive(potion);
-        }
-        return player.isPotionActive(potion);
+    @Redirect(method = "updateLightmap", at = @At(value = "FIELD", target = "Lnet/minecraft/Minecraft;night_vision_override:Z"))
+    private boolean red$night_vision_override() {
+        return NightVision.getEnabled() || Minecraft.night_vision_override;
     }
 
     @Inject(method = "getNightVisionBrightness", at = @At("HEAD"), cancellable = true)

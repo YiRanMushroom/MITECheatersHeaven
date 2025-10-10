@@ -159,24 +159,15 @@ class ScriptingEngine private constructor() {
 
     companion object {
         @JvmStatic
-        @Volatile
-        private var _instance: ScriptingEngine? = null
-        private val latch = CountDownLatch(1)
-
-        @JvmStatic
-        val instance: ScriptingEngine
-            get() {
-                latch.await()
-                return _instance!!
-            }
+        private var instance: ScriptingEngine? = null
 
         @JvmStatic
         fun Init() {
-            Thread {
-                _instance = ScriptingEngine()
-                latch.countDown()
-                LOGGER.info("ScriptingEngine initialized asynchronously on a background thread.")
-            }.start()
+            instance = ScriptingEngine()
+        }
+
+        @JvmStatic
+        fun waitForInitialization() {
         }
     }
 }

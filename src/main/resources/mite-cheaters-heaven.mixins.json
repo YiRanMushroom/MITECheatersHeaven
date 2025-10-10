@@ -4,9 +4,13 @@
   "compatibilityLevel": "JAVA_17",
   "target": "DEFAULT",
   "mixins": [
+    "CraftingResultMixin",
+    "ContainerEnchantmentMixin",
     "EntityPlayerMixin",
     "EntityRendererMixin",
-    "MinecraftServerMixin"
+    "MinecraftServerMixin",
+    "ServerPlayerMixin",
+    "SpawnerAnimalsMixin"
   ],
   "injectors": {
     "defaultRequire": 1
