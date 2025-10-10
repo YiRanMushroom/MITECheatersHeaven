@@ -52,6 +52,7 @@ dependencies {
     implementation(files("libs/RustedIronCore-$rusted_iron_core_version.jar"))
     implementation(files("libs/ManyLib-$manylib_version.jar"))
     implementation(files("libs/ModMenu-$modmenu_version.jar"))
+    implementation(files("libs/Extreme-0.1.6.10.jar"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
     implementation("org.jetbrains.kotlin:kotlin-scripting-common:$kotlin_version")

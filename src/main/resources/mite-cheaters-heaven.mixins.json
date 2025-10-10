@@ -4,13 +4,16 @@
   "compatibilityLevel": "JAVA_17",
   "target": "DEFAULT",
   "mixins": [
-    "CraftingResultMixin",
+    "BlockFurnaceNetherrackMixin",
+    "BlockFurnaceObsidianMixin",
     "ContainerEnchantmentMixin",
+    "CraftingResultMixin",
     "EntityPlayerMixin",
     "EntityRendererMixin",
     "MinecraftServerMixin",
     "ServerPlayerMixin",
-    "SpawnerAnimalsMixin"
+    "SpawnerAnimalsMixin",
+    "TileEntityHopperMixin"
   ],
   "injectors": {
     "defaultRequire": 1
