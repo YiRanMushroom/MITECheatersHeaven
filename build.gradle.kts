@@ -93,28 +93,31 @@ tasks.withType<Jar> {
 }
 
 tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+//    archiveClassifier.set("")
+//    mergeServiceFiles()
+//
+//    from(zipTree(file("libs/trove.jar")))
+//
+//    dependencies {
+//        include(dependency("org.jetbrains.kotlin:kotlin-stdlib"))
+//        include(dependency("org.jetbrains.kotlin:kotlin-reflect"))
+//        include(dependency("org.jetbrains.kotlin:kotlin-scripting-common"))
+//        include(dependency("org.jetbrains.kotlin:kotlin-scripting-jvm"))
+//        include(dependency("org.jetbrains.kotlin:kotlin-scripting-jvm-host"))
+////        include(dependency("org.jetbrains.kotlin:kotlin-script-runtime"))
+//
+////        include(dependency("org.jetbrains.kotlin:kotlin-scripting-jsr223"))
+////        include(dependency("org.jetbrains.kotlin:kotlin-compiler-embeddable"))
+////        include(dependency("org.jetbrains.kotlin:kotlin-scripting-dependencies"))
+////        include(dependency("org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable"))
+////        include(dependency("org.jetbrains.kotlin:kotlin-scripting-compiler-impl"))
+////        include(dependency("org.jetbrains.kotlin:kotlin-compiler"))
+//
+//        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core"))
+//    }
     archiveClassifier.set("")
     mergeServiceFiles()
-
-    from(zipTree(file("libs/trove.jar")))
-
-    dependencies {
-        include(dependency("org.jetbrains.kotlin:kotlin-stdlib"))
-        include(dependency("org.jetbrains.kotlin:kotlin-reflect"))
-        include(dependency("org.jetbrains.kotlin:kotlin-scripting-common"))
-        include(dependency("org.jetbrains.kotlin:kotlin-scripting-jvm"))
-        include(dependency("org.jetbrains.kotlin:kotlin-scripting-jvm-host"))
-//        include(dependency("org.jetbrains.kotlin:kotlin-script-runtime"))
-
-//        include(dependency("org.jetbrains.kotlin:kotlin-scripting-jsr223"))
-//        include(dependency("org.jetbrains.kotlin:kotlin-compiler-embeddable"))
-//        include(dependency("org.jetbrains.kotlin:kotlin-scripting-dependencies"))
-//        include(dependency("org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable"))
-//        include(dependency("org.jetbrains.kotlin:kotlin-scripting-compiler-impl"))
-//        include(dependency("org.jetbrains.kotlin:kotlin-compiler"))
-
-        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core"))
-    }
+    configurations = listOf(project.configurations.runtimeClasspath.get())
 }
 
 publishing {
