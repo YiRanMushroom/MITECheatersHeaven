@@ -22,6 +22,6 @@ class LavaInPipes : Item {
 
     companion object {
         @JvmStatic
-        var LavaInPipesHeatLevel: Int = 3200
+        var LavaInPipesHeatLevel: Int = 3
     }
 }

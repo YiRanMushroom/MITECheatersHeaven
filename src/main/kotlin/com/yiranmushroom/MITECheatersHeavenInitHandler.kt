@@ -9,15 +9,7 @@ import fi.dy.masa.malilib.interfaces.IInitializationHandler
 
 class MITECheatersHeavenInitHandler : IInitializationHandler {
     override fun registerModHandlers() {
-        val config = MITECheatersHeavenConfig.Instance
-        config.load()
-        ConfigManager.getInstance().registerConfig(config)
-        MITECheatersHeavenConfig.NightVisionToggleHotkey.keybind.setCallback { _,_ ->
-            LOGGER.info("Toggling Night Vision")
-            NightVision.enabled = !NightVision.enabled
-            true
-        }
 
-        ScriptingEngine.Init()
+
     }
 }

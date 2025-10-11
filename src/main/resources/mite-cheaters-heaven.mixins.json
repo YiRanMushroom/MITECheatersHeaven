@@ -11,6 +11,7 @@
     "CraftingResultMixin",
     "EntityPlayerMixin",
     "EntityRendererMixin",
+    "MinecraftMixin",
     "MinecraftServerMixin",
     "ServerPlayerMixin",
     "SpawnerAnimalsMixin",

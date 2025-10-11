@@ -2,6 +2,8 @@ package com.yiranmushroom
 
 import com.yiranmushroom.config.MITECheatersHeavenConfig
 import com.yiranmushroom.event.FishEventListen
+import com.yiranmushroom.mixin_helper.NightVision
+import com.yiranmushroom.scripting.ScriptingEngine
 import fi.dy.masa.malilib.config.ConfigManager
 import fi.dy.masa.malilib.event.InitializationHandler
 import net.fabricmc.api.ModInitializer
@@ -18,6 +20,8 @@ class MITECheatersHeaven : ModInitializer {
         // However, some things (like resources) may still be uninitialized.
         // Proceed with mild caution.
 
+        preInit()
+
         LOGGER.info("Hello MITE Dev world!")
 
         InitializationHandler.getInstance().registerInitializationHandler(MITECheatersHeavenInitHandler())
@@ -27,9 +31,20 @@ class MITECheatersHeaven : ModInitializer {
 
         //Register an event listening object
         MITEEvents.MITE_EVENT_BUS.register(FishEventListen())
+    }
 
+    fun preInit() {
         MITECheatersHeavenConfig.init()
 
+        val config = MITECheatersHeavenConfig.Instance
+        config.load()
+        ConfigManager.getInstance().registerConfig(config)
+        MITECheatersHeavenConfig.NightVisionToggleHotkey.keybind.setCallback { _,_ ->
+            LOGGER.info("Toggling Night Vision")
+            NightVision.enabled = !NightVision.enabled
+            true
+        }
+        ScriptingEngine.Init()
     }
 
     companion object {
