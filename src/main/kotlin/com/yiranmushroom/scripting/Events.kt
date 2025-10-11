@@ -2,6 +2,7 @@ package com.yiranmushroom.scripting
 
 import com.yiranmushroom.MITECheatersHeaven
 import net.xiaoyu233.fml.reload.event.ItemRegistryEvent
+import net.xiaoyu233.fml.reload.event.RecipeRegistryEvent
 import java.util.concurrent.ConcurrentHashMap
 
 object Events {
@@ -68,6 +69,29 @@ object Events {
                 MITECheatersHeaven.LOGGER.error("Error during post-initialization event: ${it.first}", e)
             }
         }
+    }
 
+    private var onRecipeRegisterSet: MutableSet<Pair<String, (
+        RecipeRegistryEvent
+    ) -> Unit>> = ConcurrentHashMap.newKeySet()
+
+    fun onRecipeRegister(hint: String, action: ((RecipeRegistryEvent) -> Unit)) {
+        onRecipeRegisterSet.add(Pair(hint, action))
+    }
+
+    fun onRecipeRegister(action: (RecipeRegistryEvent) -> Unit) {
+        onRecipeRegisterSet.add(Pair("Unlabeled", action))
+    }
+
+    @JvmStatic
+    fun triggerRecipeRegister(event: RecipeRegistryEvent) {
+        onRecipeRegisterSet.forEach {
+            try {
+                MITECheatersHeaven.LOGGER.info("Triggering recipe register event: ${it.first}")
+                it.second(event)
+            } catch (e: Exception) {
+                MITECheatersHeaven.LOGGER.error("Error during recipe register event: ${it.first}", e)
+            }
+        }
     }
 }
