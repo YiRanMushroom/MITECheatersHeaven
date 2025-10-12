@@ -12,6 +12,7 @@
     "ContainerRepairMixin",
     "CraftingResultMixin",
     "EnchantmentHelperMixin",
+    "EntityAITasksMixin",
     "EntityPlayerMixin",
     "EntityRendererMixin",
     "ItemRockMixin",
