@@ -7,6 +7,7 @@ import net.minecraft.EnchantmentHelper;
 import net.minecraft.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.List;
@@ -18,4 +19,5 @@ public class ContainerEnchantmentMixin {
     private List mod$buildEnchantmentList(Random random, ItemStack itemStack, int enchantmentLevel) {
         return EnchantmentHelper.buildEnchantmentList(random, itemStack, EnchantmentScripting.getTransformEnchantmentLevel().invoke(random, itemStack, enchantmentLevel));
     }
+
 }
