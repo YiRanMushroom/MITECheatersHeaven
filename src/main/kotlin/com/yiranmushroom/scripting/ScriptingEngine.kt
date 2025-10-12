@@ -1,6 +1,7 @@
 package com.yiranmushroom.scripting
 
 import com.yiranmushroom.MITECheatersHeaven.Companion.LOGGER
+import com.yiranmushroom.executeScratch
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
@@ -107,6 +108,8 @@ class ScriptingEngine private constructor() {
             .filter { it.isFile && (it.extension == "kts" || it.extension == "inc") }
             .filter { it.extension == "kts" }
             .toList()
+
+        executeScratch()
 
         val executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
         try {

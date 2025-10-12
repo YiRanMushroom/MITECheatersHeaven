@@ -7,6 +7,7 @@
     "BiomeDecoratorMixin",
     "BlockFurnaceNetherrackMixin",
     "BlockFurnaceObsidianMixin",
+    "ClientPlayerMixin",
     "ContainerEnchantmentMixin",
     "ContainerRepairMixin",
     "CraftingResultMixin",

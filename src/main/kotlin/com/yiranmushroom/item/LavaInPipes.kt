@@ -12,7 +12,7 @@ class LavaInPipes : Item {
         this.creativeTab = CreativeTabs.tabMisc
     }
 
-    override fun getBurnTime(item_stack: ItemStack): Int {
+    override fun getBurnTime(item_stack: ItemStack?): Int {
         return 3200
     }
 
