@@ -3,13 +3,23 @@ package com.yiranmushroom.mixin;
 import com.yiranmushroom.mixin_helper.EntityPlayerScripting;
 import net.minecraft.*;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EntityPlayer.class)
-public class EntityPlayerMixin {
+public abstract class EntityPlayerMixin extends EntityLivingBase {
+    @Shadow
+    public abstract ItemStack[] getLastActiveItems();
+
+    public EntityPlayerMixin(World par1World) {
+        super(par1World);
+    }
+
     @Inject(method = "getReach(Lnet/minecraft/EnumEntityReachContext;Lnet/minecraft/Entity;)F", at = @At("RETURN"), cancellable = true)
     void inj$getReach1(EnumEntityReachContext context, Entity entity, CallbackInfoReturnable<Float> cir) {
         cir.setReturnValue(EntityPlayerScripting.getGetReachModify1().invoke((EntityPlayer) (Object) this, context, entity, cir.getReturnValueF()));
@@ -42,5 +52,14 @@ public class EntityPlayerMixin {
         } else {
             return gameRules.getGameRuleBooleanValue(key);
         }
+    }
+
+    @Unique
+    private static final int mixin$maxGenerationTime = 20 * 60;
+
+    @Inject(method = "onLivingUpdate", at = @At("HEAD"))
+    void inj$onLivingUpdate(CallbackInfo ci) {
+        int levelOfRegeneration = EnchantmentHelper.getMaxEnchantmentLevel(Enchantment.regeneration.effectId, ((EntityPlayer) (Object) this).getLastActiveItems());
+        this.heal(((float) levelOfRegeneration) / mixin$maxGenerationTime);
     }
 }
