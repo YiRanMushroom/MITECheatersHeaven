@@ -1,5 +1,7 @@
 package com.yiranmushroom.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.yiranmushroom.enchantments.FlyingEnchantment;
 import com.yiranmushroom.mixin_helper.ClientPlayerScripting;
 import net.minecraft.ClientPlayer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,5 +18,10 @@ public class ClientPlayerMixin {
             var result = transform.invoke((ClientPlayer) (Object) this, ((ClientPlayer) (Object) this).openContainer, cir.getReturnValueI());
             cir.setReturnValue(result);
         } // else do nothing
+    }
+
+    @ModifyExpressionValue(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/PlayerCapabilities;allowFlying:Z"))
+    private boolean modify$allowFlying(boolean original) {
+        return original || FlyingEnchantment.holdBy((ClientPlayer) (Object) this);
     }
 }

@@ -1,7 +1,7 @@
 package com.yiranmushroom
 
 import com.yiranmushroom.config.MITECheatersHeavenConfig
-import com.yiranmushroom.event.FishEventListen
+import com.yiranmushroom.event.MCHEventListener
 import com.yiranmushroom.mixin_helper.NightVision
 import com.yiranmushroom.scripting.ScriptingEngine
 import fi.dy.masa.malilib.config.ConfigManager
@@ -30,7 +30,7 @@ class MITECheatersHeaven : ModInitializer {
         ModResourceManager.addResourcePackDomain(MOD_ID)
 
         //Register an event listening object
-        MITEEvents.MITE_EVENT_BUS.register(FishEventListen())
+        MITEEvents.MITE_EVENT_BUS.register(MCHEventListener())
     }
 
     fun preInit() {

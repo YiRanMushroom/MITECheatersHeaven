@@ -1,5 +1,7 @@
 package com.yiranmushroom.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.yiranmushroom.enchantments.FlyingEnchantment;
 import com.yiranmushroom.mixin_helper.EntityPlayerScripting;
 import net.minecraft.*;
 import org.spongepowered.asm.mixin.Mixin;
@@ -54,12 +56,38 @@ public abstract class EntityPlayerMixin extends EntityLivingBase {
         }
     }
 
+    @Inject(method = "readEntityFromNBT", at = @At("TAIL"))
+    public void inj$readEntityFromNBT(net.minecraft.NBTTagCompound nbt, CallbackInfo ci) {
+        if (nbt.hasKey("regenerationAmount")) {
+            this.mixin$regenerationAmount = nbt.getFloat("regenerationAmount");
+        } else {
+            this.mixin$regenerationAmount = 0f;
+        }
+    }
+
+    @Inject(method = "writeEntityToNBT", at = @At("TAIL"))
+    public void inj$writeEntityToNBT(net.minecraft.NBTTagCompound nbt, CallbackInfo ci) {
+        nbt.setFloat("regenerationAmount", this.mixin$regenerationAmount);
+    }
+
     @Unique
-    private static final int mixin$maxGenerationTime = 20 * 60;
+    private static final float mixin$maxGenerationTime = 20 * 60;
+
+    @Unique
+    private float mixin$regenerationAmount = 0.0f;
 
     @Inject(method = "onLivingUpdate", at = @At("HEAD"))
     void inj$onLivingUpdate(CallbackInfo ci) {
         int levelOfRegeneration = EnchantmentHelper.getMaxEnchantmentLevel(Enchantment.regeneration.effectId, ((EntityPlayer) (Object) this).getLastActiveItems());
-        this.heal(((float) levelOfRegeneration) / mixin$maxGenerationTime);
+        mixin$regenerationAmount += (float) levelOfRegeneration / mixin$maxGenerationTime;
+        if (mixin$regenerationAmount >= 1.0f) {
+            this.heal((int) mixin$regenerationAmount);
+            mixin$regenerationAmount = 0.0f;
+        }
+    }
+
+    @ModifyExpressionValue(method = "fall", at = @At(value = "FIELD", target = "Lnet/minecraft/PlayerCapabilities;allowFlying:Z"))
+    private boolean modify$allowFlying(boolean original) {
+        return original || FlyingEnchantment.holdBy((EntityPlayer) (Object) this);
     }
 }
