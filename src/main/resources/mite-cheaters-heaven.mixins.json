@@ -5,8 +5,10 @@
   "target": "DEFAULT",
   "mixins": [
     "BiomeDecoratorMixin",
+    "BlockCropsMixin",
     "BlockFurnaceNetherrackMixin",
     "BlockFurnaceObsidianMixin",
+    "BlockLeavesMixin",
     "ClientPlayerMixin",
     "ContainerEnchantmentMixin",
     "ContainerRepairMixin",
@@ -15,6 +17,7 @@
     "EntityAITasksMixin",
     "EntityPlayerMixin",
     "EntityRendererMixin",
+    "GrowingPlantMixin",
     "ItemRockMixin",
     "MinecraftMixin",
     "MinecraftServerMixin",
