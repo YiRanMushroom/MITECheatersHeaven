@@ -1,9 +1,13 @@
 package com.yiranmushroom.mixin;
 
+import com.google.gson.Gson;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.yiranmushroom.commands.IHomeCommandContext;
 import com.yiranmushroom.enchantments.FlyingEnchantment;
 import com.yiranmushroom.mixin_helper.EntityPlayerScripting;
+import kotlin.Triple;
 import net.minecraft.*;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -13,8 +17,12 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Mixin(EntityPlayer.class)
-public abstract class EntityPlayerMixin extends EntityLivingBase {
+public abstract class EntityPlayerMixin extends EntityLivingBase implements IHomeCommandContext {
     @Shadow
     public abstract ItemStack[] getLastActiveItems();
 
@@ -63,11 +71,32 @@ public abstract class EntityPlayerMixin extends EntityLivingBase {
         } else {
             this.mixin$regenerationAmount = 0f;
         }
+
+        if (nbt.hasKey("homeCommandContext")) {
+            String json = nbt.getString("homeCommandContext");
+            Gson gson = new Gson();
+            Map<String, List<Double>> tempMap = gson.fromJson(json, Map.class);
+            for (Map.Entry<String, List<Double>> entry : tempMap.entrySet()) {
+                List<Double> coords = entry.getValue();
+                if (coords.size() == 3) {
+                    mixin$homeCommandContext.put(entry.getKey(), new Triple<>(coords.get(0), coords.get(1), coords.get(2)));
+                }
+            }
+        }
     }
 
     @Inject(method = "writeEntityToNBT", at = @At("TAIL"))
     public void inj$writeEntityToNBT(net.minecraft.NBTTagCompound nbt, CallbackInfo ci) {
         nbt.setFloat("regenerationAmount", this.mixin$regenerationAmount);
+
+        Gson gson = new Gson();
+        Map<String, List<Double>> tempMap = new HashMap<>();
+        for (Map.Entry<String, Triple<Double, Double, Double>> entry : mixin$homeCommandContext.entrySet()) {
+            Triple<Double, Double, Double> coords = entry.getValue();
+            tempMap.put(entry.getKey(), List.of(coords.getFirst(), coords.getSecond(), coords.getThird()));
+        }
+        String json = gson.toJson(tempMap);
+        nbt.setString("homeCommandContext", json);
     }
 
     @Unique
@@ -89,5 +118,28 @@ public abstract class EntityPlayerMixin extends EntityLivingBase {
     @ModifyExpressionValue(method = "fall", at = @At(value = "FIELD", target = "Lnet/minecraft/PlayerCapabilities;allowFlying:Z"))
     private boolean modify$allowFlying(boolean original) {
         return original || FlyingEnchantment.holdBy((EntityPlayer) (Object) this);
+    }
+
+    @Unique
+    private Map<String, Triple<Double, Double, Double>> mixin$homeCommandContext = new HashMap<String, Triple<Double, Double, Double>>();
+
+    @Override
+    public @NotNull List<String> getHomeNames() {
+        return mixin$homeCommandContext.keySet().stream().toList();
+    }
+
+    @Override
+    public Triple<Double, Double, Double> getHomeCoordinates(@NotNull String name) {
+        return mixin$homeCommandContext.get(name);
+    }
+
+    @Override
+    public void setHomeCoordinates(@NotNull String name, @NotNull Triple<Double, Double, Double> coordinates) {
+        mixin$homeCommandContext.put(name, coordinates);
+    }
+
+    @Override
+    public boolean deleteHome(@NotNull String name) {
+        return mixin$homeCommandContext.remove(name) != null;
     }
 }
