@@ -1,6 +1,7 @@
 package com.yiranmushroom.event;
 
 import com.google.common.eventbus.Subscribe;
+import com.yiranmushroom.commands.BackCommand
 import com.yiranmushroom.commands.DeleteHomeCommand
 import com.yiranmushroom.commands.HomeCommand
 import com.yiranmushroom.commands.SetHomeCommand
@@ -35,5 +36,6 @@ class MCHEventListener {
         event.register(HomeCommand())
         event.register(SetHomeCommand())
         event.register(DeleteHomeCommand())
+        event.register(BackCommand())
     }
 }

@@ -2,9 +2,11 @@ package com.yiranmushroom.mixin;
 
 import com.google.gson.Gson;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.yiranmushroom.commands.HomeCommandContexts;
 import com.yiranmushroom.commands.IHomeCommandContext;
 import com.yiranmushroom.enchantments.FlyingEnchantment;
 import com.yiranmushroom.mixin_helper.EntityPlayerScripting;
+import kotlin.Pair;
 import kotlin.Triple;
 import net.minecraft.*;
 import org.jetbrains.annotations.NotNull;
@@ -17,14 +19,21 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.security.auth.callback.Callback;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static net.xiaoyu233.fml.FishModLoader.LOGGER;
+
 
 @Mixin(EntityPlayer.class)
 public abstract class EntityPlayerMixin extends EntityLivingBase implements IHomeCommandContext {
     @Shadow
     public abstract ItemStack[] getLastActiveItems();
+
+    @Shadow
+    public abstract String getEntityName();
 
     public EntityPlayerMixin(World par1World) {
         super(par1World);
@@ -64,7 +73,7 @@ public abstract class EntityPlayerMixin extends EntityLivingBase implements IHom
         }
     }
 
-    @Inject(method = "readEntityFromNBT", at = @At("TAIL"))
+    @Inject(method = "readEntityFromNBT", at = @At("HEAD"))
     public void inj$readEntityFromNBT(net.minecraft.NBTTagCompound nbt, CallbackInfo ci) {
         if (nbt.hasKey("regenerationAmount")) {
             this.mixin$regenerationAmount = nbt.getFloat("regenerationAmount");
@@ -85,7 +94,36 @@ public abstract class EntityPlayerMixin extends EntityLivingBase implements IHom
         }
     }
 
-    @Inject(method = "writeEntityToNBT", at = @At("TAIL"))
+    @Inject(method = "<init>", at = @At("TAIL"))
+    public void inj$constructor(World par1World, String par2Str, CallbackInfo ci) {
+        LOGGER.info("EntityPlayerMixin: Constructor injected for player: {}", par2Str);
+
+        if (HomeCommandContexts.getPreservePlayerHomesOnDeath().containsKey(this.getEntityName())) {
+            var thePair = HomeCommandContexts.getPreservePlayerHomesOnDeath().get(this.getEntityName());
+
+            this.mixin$backCoordinates = thePair.getSecond();
+
+            if (mixin$homeCommandContext != thePair.getFirst()) {
+                this.mixin$homeCommandContext.putAll(thePair.getFirst());
+            }
+
+            HomeCommandContexts.getPreservePlayerHomesOnDeath().remove(this.getEntityName());
+        }
+    }
+
+    @Inject(method = "setDead", at = @At("HEAD"))
+    public void inj$setDead(CallbackInfo ci) {
+        this.mixin$backCoordinates = new Triple<>(
+                this.posX,
+                this.posY,
+                this.posZ
+        );
+
+        HomeCommandContexts.getPreservePlayerHomesOnDeath().put(this.getEntityName(),
+                new Pair<>(this.mixin$homeCommandContext, this.mixin$backCoordinates));
+    }
+
+    @Inject(method = "writeEntityToNBT", at = @At("RETURN"))
     public void inj$writeEntityToNBT(net.minecraft.NBTTagCompound nbt, CallbackInfo ci) {
         nbt.setFloat("regenerationAmount", this.mixin$regenerationAmount);
 
@@ -123,6 +161,9 @@ public abstract class EntityPlayerMixin extends EntityLivingBase implements IHom
     @Unique
     private Map<String, Triple<Double, Double, Double>> mixin$homeCommandContext = new HashMap<String, Triple<Double, Double, Double>>();
 
+    @Unique
+    private Triple<Double, Double, Double> mixin$backCoordinates = null;
+
     @Override
     public @NotNull List<String> getHomeNames() {
         return mixin$homeCommandContext.keySet().stream().toList();
@@ -141,5 +182,15 @@ public abstract class EntityPlayerMixin extends EntityLivingBase implements IHom
     @Override
     public boolean deleteHome(@NotNull String name) {
         return mixin$homeCommandContext.remove(name) != null;
+    }
+
+    @Override
+    public Triple<Double, Double, Double> getBackCoordinates() {
+        return mixin$backCoordinates;
+    }
+
+    @Override
+    public void setBackCoordinates(Triple<Double, Double, Double> coordinates) {
+        mixin$backCoordinates = coordinates;
     }
 }

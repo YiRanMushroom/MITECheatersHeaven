@@ -3,6 +3,12 @@ package com.yiranmushroom.commands
 import com.yiranmushroom.MITECheatersHeaven.Companion.LOGGER
 import net.minecraft.*
 
+object HomeCommandContexts {
+    @JvmStatic
+    val preservePlayerHomesOnDeath: Map<String, Pair<Map<String, Triple<Double, Double, Double>>, Triple<Double, Double, Double>>> =
+        mutableMapOf()
+}
+
 class HomeCommand : CommandBase() {
     override fun getRequiredPermissionLevel(): Int {
         return 0
@@ -63,6 +69,14 @@ class HomeCommand : CommandBase() {
 
                 return
             } else {
+                iCommandSender.setBackCoordinates(
+                    Triple(
+                        iCommandSender.posX,
+                        iCommandSender.posY,
+                        iCommandSender.posZ
+                    )
+                )
+
                 iCommandSender.setPositionAndUpdate(
                     coordinate.first,
                     coordinate.second,
@@ -94,7 +108,11 @@ class HomeCommand : CommandBase() {
             emptyList()
         } else {
             if (commandSender is IHomeCommandContext) {
-                commandSender.getHomeNames() - listOf("@home")
+                val allHome = commandSender.getHomeNames() - listOf("@home")
+                getListOfStringsMatchingLastWord(
+                    commandStrings,
+                    *allHome.toTypedArray()
+                ) as List<String>
             } else {
                 emptyList()
             }
@@ -226,6 +244,83 @@ class DeleteHomeCommand : CommandBase() {
                             }
                         )
                         .setColor(EnumChatFormatting.RED)
+                )
+            }
+        } else {
+            LOGGER.error("Logic error: EntityPlayer is not IHomeCommandContext")
+        }
+    }
+
+    override fun addTabCompletionOptions(
+        commandSender: ICommandSender,
+        commandStrings: Array<String>
+    ): List<String> {
+        return if (commandSender !is EntityPlayer) {
+            emptyList()
+        } else {
+            if (commandSender is IHomeCommandContext) {
+                val allHome = commandSender.getHomeNames() - listOf("@home")
+                getListOfStringsMatchingLastWord(
+                    commandStrings,
+                    *allHome.toTypedArray()
+                ) as List<String>
+            } else {
+                emptyList()
+            }
+        }
+    }
+}
+
+class BackCommand : CommandBase() {
+    override fun getCommandName(): String {
+        return "back"
+    }
+
+    override fun getRequiredPermissionLevel(): Int {
+        return 0
+    }
+
+    override fun getCommandUsage(iCommandSender: ICommandSender): String {
+        return "/back"
+    }
+
+    override fun processCommand(
+        iCommandSender: ICommandSender?,
+        strings: Array<out String?>?
+    ) {
+        if (iCommandSender !is EntityPlayer) {
+            return
+        }
+
+        if (iCommandSender is IHomeCommandContext) {
+            val coordinate = iCommandSender.getBackCoordinates()
+
+            if (coordinate == null) {
+                iCommandSender.sendChatToPlayer(
+                    ChatMessageComponent
+                        .createFromText("No back location set.")
+                        .setColor(EnumChatFormatting.RED)
+                )
+                return
+            } else {
+                iCommandSender.setBackCoordinates(
+                    Triple(
+                        iCommandSender.posX,
+                        iCommandSender.posY,
+                        iCommandSender.posZ
+                    )
+                )
+
+                iCommandSender.setPositionAndUpdate(
+                    coordinate.first,
+                    coordinate.second,
+                    coordinate.third
+                )
+
+                iCommandSender.sendChatToPlayer(
+                    ChatMessageComponent
+                        .createFromText("Teleported back.")
+                        .setColor(EnumChatFormatting.GREEN)
                 )
             }
         } else {
