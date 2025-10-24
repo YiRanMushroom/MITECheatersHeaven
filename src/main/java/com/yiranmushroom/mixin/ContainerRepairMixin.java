@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.yiranmushroom.MITECheatersHeaven;
+import com.yiranmushroom.enchantments.Enchantments;
 import net.minecraft.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,11 +24,11 @@ public class ContainerRepairMixin {
             @Local(ordinal = 1) ItemStack secondSlotItemStack,
             @Local(ordinal = 3) LocalBooleanRef isEnchantingRef,
             @Local(ordinal = 0) LocalRef<Map> enchantmentOnItem2Ref) {
-        var logger = MITECheatersHeaven.getLOGGER();
-        logger.info("First Slot ItemStack: {}", firstSlotItemStack);
-        logger.info("Second Slot ItemStack: {}", secondSlotItemStack);
-        logger.info("Is Enchanting Ref: {}", isEnchantingRef.get());
-        logger.info("Enchantment On Item 2 Ref: {}", enchantmentOnItem2Ref.get());
+//        var logger = MITECheatersHeaven.getLOGGER();
+//        logger.info("First Slot ItemStack: {}", firstSlotItemStack);
+//        logger.info("Second Slot ItemStack: {}", secondSlotItemStack);
+//        logger.info("Is Enchanting Ref: {}", isEnchantingRef.get());
+//        logger.info("Enchantment On Item 2 Ref: {}", enchantmentOnItem2Ref.get());
 
         if (firstSlotItemStack.getItem().getItemEnchantability() <= 0 || secondSlotItemStack == null) {
             return;
@@ -44,7 +45,7 @@ public class ContainerRepairMixin {
 
         isEnchantingRef.set(true);
         enchantmentOnItem2Ref.set(EnchantmentHelper.getEnchantmentsMapFromTags(storedEnchantments));
-        logger.info("enchantmentOnItem2Ref updated: {}", enchantmentOnItem2Ref.get());
+//        logger.info("enchantmentOnItem2Ref updated: {}", enchantmentOnItem2Ref.get());
     }
 
     @Inject(method = "updateRepairOutput", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/EnchantmentHelper;getEnchantmentsMap(Lnet/minecraft/ItemStack;)Ljava/util/Map;"))
@@ -53,10 +54,10 @@ public class ContainerRepairMixin {
             @Local(ordinal = 1) Map enchantmentsOnCopyOfFirstSlot,
             @Local(ordinal = 0) LocalRef<Map> enchantmentOnItem2,
             @Local(ordinal = 2) ItemStack copyOfFirstSlot) {
-        var logger = MITECheatersHeaven.getLOGGER();
-        logger.info("Enchantments On Copy Of First Slot Ref before: {}", enchantmentsOnCopyOfFirstSlot);
-        logger.info("Enchantment On Item 2 Ref: {}", enchantmentOnItem2);
-        logger.info("Copy Of First Slot ItemStack: {}", copyOfFirstSlot);
+//        var logger = MITECheatersHeaven.getLOGGER();
+//        logger.info("Enchantments On Copy Of First Slot Ref before: {}", enchantmentsOnCopyOfFirstSlot);
+//        logger.info("Enchantment On Item 2 Ref: {}", enchantmentOnItem2);
+//        logger.info("Copy Of First Slot ItemStack: {}", copyOfFirstSlot);
 
         for (Object entryObject : enchantmentOnItem2.get().entrySet()) {
             Map.Entry entry = (Map.Entry) entryObject;
@@ -66,9 +67,11 @@ public class ContainerRepairMixin {
 
             if (enchantmentsOnCopyOfFirstSlot.containsKey(enchantmentId)) {
                 Integer currentLevel = (Integer) enchantmentsOnCopyOfFirstSlot.get(enchantmentId);
-                enchantmentsOnCopyOfFirstSlot.put(enchantmentId, currentLevel + sacrificialLevel);
+                enchantmentsOnCopyOfFirstSlot.put(enchantmentId, Enchantments.getAnvilEnchantmentLevelTransformHandler()
+                        .transform(enchantmentId, currentLevel + sacrificialLevel));
             } else if (enchantment.canEnchantItem(copyOfFirstSlot.getItem())) {
-                enchantmentsOnCopyOfFirstSlot.put(enchantmentId, sacrificialLevel);
+                enchantmentsOnCopyOfFirstSlot.put(enchantmentId, Enchantments.getAnvilEnchantmentLevelTransformHandler()
+                        .transform(enchantmentId, sacrificialLevel));
             }
         }
 

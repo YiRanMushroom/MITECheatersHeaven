@@ -17,4 +17,7 @@ object Enchantments {
             enchantment, this.lastActiveItems
         ).let { it > 0 }
     }
+
+    @JvmStatic
+    val anvilEnchantmentLevelTransformHandler = AnvilEnchantmentLevelTransformHandler()
 }
