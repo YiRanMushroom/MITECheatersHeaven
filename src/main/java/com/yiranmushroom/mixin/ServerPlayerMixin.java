@@ -1,7 +1,12 @@
 package com.yiranmushroom.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.yiranmushroom.container.IClearTrashCan;
+import com.yiranmushroom.container.IGetTrashCanInventory;
+import com.yiranmushroom.container.IOpenTrashCan;
 import com.yiranmushroom.enchantments.FlyingEnchantment;
+import com.yiranmushroom.network.S2C.S2COpenTrashCanPacket;
+import moddedmite.rustedironcore.network.Network;
 import net.minecraft.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -13,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static net.xiaoyu233.fml.FishModLoader.LOGGER;
 
 @Mixin(ServerPlayer.class)
-public class ServerPlayerMixin {
+public abstract class ServerPlayerMixin implements IClearTrashCan, IGetTrashCanInventory, IOpenTrashCan {
     @Redirect(method = "onDeath", at = @At(value = "INVOKE", target = "Lnet/minecraft/GameRules;getGameRuleBooleanValue(Ljava/lang/String;)Z"))
     public boolean injectKeepInventory(GameRules instance, String key) {
         if (key.equals("keepInventory")) {
@@ -61,5 +66,16 @@ public class ServerPlayerMixin {
     public boolean modifyDecrementNutrientsInCreativeMode(boolean original) {
 //        LOGGER.info("modifyDecrementNutrientsInCreativeMode called, original: " + original);
         return original || !this.mixin$ShouldDecrease();
+    }
+
+    @Override
+    public void clearTrashCan() {
+        this.getTrashCanInventory().destroyInventory();
+    }
+
+    @Override
+    public void openTrashCan() {
+        LOGGER.info("Opening trash can for player: {}", ((ServerPlayer) (Object) this).getEntityName());
+        Network.sendToClient((ServerPlayer) (Object) this, new S2COpenTrashCanPacket());
     }
 }

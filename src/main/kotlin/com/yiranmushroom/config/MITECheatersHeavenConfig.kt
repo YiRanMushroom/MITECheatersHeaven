@@ -22,6 +22,12 @@ class MITECheatersHeavenConfig : SimpleConfigs {
         )
 
         @JvmStatic
+        var OpenTrashCanHotKey = ConfigHotkey(
+            "OpenTrashCanHotKey", Keyboard.KEY_H,
+            "This is the hotkey to open Trash Can GUI"
+        )
+
+        @JvmStatic
         var EnableDevModePrivilegeConfig = ConfigBoolean(
             "EnableDevModePrivilegeConfig",
             false, "Enable Dev Mode Privilege"

@@ -5,6 +5,7 @@ import com.yiranmushroom.commands.BackCommand
 import com.yiranmushroom.commands.DeleteHomeCommand
 import com.yiranmushroom.commands.HomeCommand
 import com.yiranmushroom.commands.SetHomeCommand
+import com.yiranmushroom.commands.TrashCanCommand
 import com.yiranmushroom.enchantments.Enchantments
 import com.yiranmushroom.item.Items;
 import com.yiranmushroom.scripting.Events;
@@ -37,5 +38,6 @@ class MCHEventListener {
         event.register(SetHomeCommand())
         event.register(DeleteHomeCommand())
         event.register(BackCommand())
+        event.register(TrashCanCommand()) // Not implemented correctly.
     }
 }

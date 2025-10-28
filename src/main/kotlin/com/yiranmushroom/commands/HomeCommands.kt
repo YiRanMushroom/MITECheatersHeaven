@@ -3,12 +3,6 @@ package com.yiranmushroom.commands
 import com.yiranmushroom.MITECheatersHeaven.Companion.LOGGER
 import net.minecraft.*
 
-object HomeCommandContexts {
-    @JvmStatic
-    val preservePlayerHomesOnDeath: Map<String, Pair<Map<String, Triple<Double, Double, Double>>, Triple<Double, Double, Double>>> =
-        mutableMapOf()
-}
-
 class HomeCommand : CommandBase() {
     override fun getRequiredPermissionLevel(): Int {
         return 0

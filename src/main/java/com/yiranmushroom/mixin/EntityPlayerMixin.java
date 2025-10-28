@@ -2,11 +2,12 @@ package com.yiranmushroom.mixin;
 
 import com.google.gson.Gson;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.yiranmushroom.commands.HomeCommandContexts;
 import com.yiranmushroom.commands.IHomeCommandContext;
+//import com.yiranmushroom.container.ContainerTrashCan;
+import com.yiranmushroom.container.IGetTrashCanInventory;
+import com.yiranmushroom.container.IOpenTrashCan;
 import com.yiranmushroom.enchantments.FlyingEnchantment;
 import com.yiranmushroom.mixin_helper.EntityPlayerScripting;
-import kotlin.Pair;
 import kotlin.Triple;
 import net.minecraft.*;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import javax.security.auth.callback.Callback;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ import static net.xiaoyu233.fml.FishModLoader.LOGGER;
 
 
 @Mixin(EntityPlayer.class)
-public abstract class EntityPlayerMixin extends EntityLivingBase implements IHomeCommandContext {
+public abstract class EntityPlayerMixin extends EntityLivingBase implements IHomeCommandContext, IGetTrashCanInventory {
     @Shadow
     public abstract ItemStack[] getLastActiveItems();
 
@@ -98,17 +99,7 @@ public abstract class EntityPlayerMixin extends EntityLivingBase implements IHom
     public void inj$constructor(World par1World, String par2Str, CallbackInfo ci) {
         LOGGER.info("EntityPlayerMixin: Constructor injected for player: {}", par2Str);
 
-        if (HomeCommandContexts.getPreservePlayerHomesOnDeath().containsKey(this.getEntityName())) {
-            var thePair = HomeCommandContexts.getPreservePlayerHomesOnDeath().get(this.getEntityName());
-
-            this.mixin$backCoordinates = thePair.getSecond();
-
-            if (mixin$homeCommandContext != thePair.getFirst()) {
-                this.mixin$homeCommandContext.putAll(thePair.getFirst());
-            }
-
-            HomeCommandContexts.getPreservePlayerHomesOnDeath().remove(this.getEntityName());
-        }
+        this.mixin$trashCan = new InventoryBasic("Trash Can", true, 27);
     }
 
     @Inject(method = "setDead", at = @At("HEAD"))
@@ -118,9 +109,6 @@ public abstract class EntityPlayerMixin extends EntityLivingBase implements IHom
                 this.posY,
                 this.posZ
         );
-
-        HomeCommandContexts.getPreservePlayerHomesOnDeath().put(this.getEntityName(),
-                new Pair<>(this.mixin$homeCommandContext, this.mixin$backCoordinates));
     }
 
     @Inject(method = "writeEntityToNBT", at = @At("RETURN"))
@@ -135,6 +123,12 @@ public abstract class EntityPlayerMixin extends EntityLivingBase implements IHom
         }
         String json = gson.toJson(tempMap);
         nbt.setString("homeCommandContext", json);
+    }
+
+    @Inject(method = "clonePlayer", at = @At("RETURN"))
+    public void inj$clonePlayer(EntityPlayer oldPlayer, boolean respawnFromEnd, CallbackInfo ci) {
+        this.mixin$homeCommandContext = ((EntityPlayerMixin) (Object) oldPlayer).mixin$homeCommandContext;
+        this.mixin$backCoordinates = ((EntityPlayerMixin) (Object) oldPlayer).mixin$backCoordinates;
     }
 
     @Unique
@@ -192,5 +186,13 @@ public abstract class EntityPlayerMixin extends EntityLivingBase implements IHom
     @Override
     public void setBackCoordinates(Triple<Double, Double, Double> coordinates) {
         mixin$backCoordinates = coordinates;
+    }
+
+    @Unique
+    public IInventory mixin$trashCan = null;
+
+    @Override
+    public @NotNull IInventory getTrashCanInventory() {
+        return this.mixin$trashCan;
     }
 }

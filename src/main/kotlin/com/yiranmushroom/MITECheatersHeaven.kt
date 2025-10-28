@@ -1,12 +1,16 @@
 package com.yiranmushroom
 
 import com.yiranmushroom.config.MITECheatersHeavenConfig
+import com.yiranmushroom.container.IOpenTrashCan
 import com.yiranmushroom.event.MCHEventListener
 import com.yiranmushroom.mixin_helper.NightVision
+import com.yiranmushroom.network.MCHNetwork
 import com.yiranmushroom.scripting.ScriptingEngine
 import fi.dy.masa.malilib.config.ConfigManager
 import fi.dy.masa.malilib.event.InitializationHandler
 import net.fabricmc.api.ModInitializer
+import net.minecraft.ClientPlayer
+import net.minecraft.Minecraft
 import net.xiaoyu233.fml.ModResourceManager
 //import net.xiaoyu233.fml.ModResourceManager
 import net.xiaoyu233.fml.reload.event.MITEEvents
@@ -31,6 +35,8 @@ class MITECheatersHeaven : ModInitializer {
 
         //Register an event listening object
         MITEEvents.MITE_EVENT_BUS.register(MCHEventListener())
+
+        MCHNetwork.init()
     }
 
     fun preInit() {
@@ -44,6 +50,13 @@ class MITECheatersHeaven : ModInitializer {
             NightVision.enabled = !NightVision.enabled
             true
         }
+
+        MITECheatersHeavenConfig.OpenTrashCanHotKey.keybind.setCallback { _, _ ->
+            val player : ClientPlayer? = Minecraft.getClientPlayer()
+            (player as? IOpenTrashCan)?.openTrashCan()
+            true
+        }
+        
         ScriptingEngine.Init()
     }
 
