@@ -4,21 +4,24 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.yiranmushroom.container.IClearTrashCan;
 import com.yiranmushroom.container.IGetTrashCanInventory;
 import com.yiranmushroom.container.IOpenTrashCan;
-import com.yiranmushroom.enchantments.FlyingEnchantment;
 import com.yiranmushroom.network.S2C.S2COpenTrashCanPacket;
+import com.yiranmushroom.network.S2C.S2CTrashCanClearedPacket;
 import moddedmite.rustedironcore.network.Network;
 import net.minecraft.*;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static net.xiaoyu233.fml.FishModLoader.LOGGER;
-
 @Mixin(ServerPlayer.class)
-public abstract class ServerPlayerMixin implements IClearTrashCan, IGetTrashCanInventory, IOpenTrashCan {
+public abstract class ServerPlayerMixin extends EntityPlayer implements IClearTrashCan, IGetTrashCanInventory, IOpenTrashCan, ICrafting {
+    public ServerPlayerMixin(World par1World, String par2Str) {
+        super(par1World, par2Str);
+    }
+
     @Redirect(method = "onDeath", at = @At(value = "INVOKE", target = "Lnet/minecraft/GameRules;getGameRuleBooleanValue(Ljava/lang/String;)Z"))
     public boolean injectKeepInventory(GameRules instance, String key) {
         if (key.equals("keepInventory")) {
@@ -64,18 +67,39 @@ public abstract class ServerPlayerMixin implements IClearTrashCan, IGetTrashCanI
 
     @ModifyExpressionValue(method = "decrementNutrients", at = @At(value = "INVOKE", target = "Lnet/minecraft/ServerPlayer;inCreativeMode()Z", ordinal = 0))
     public boolean modifyDecrementNutrientsInCreativeMode(boolean original) {
-//        LOGGER.info("modifyDecrementNutrientsInCreativeMode called, original: " + original);
         return original || !this.mixin$ShouldDecrease();
     }
 
     @Override
     public void clearTrashCan() {
         this.getTrashCanInventory().destroyInventory();
+
+        Network.sendToClient((ServerPlayer) (Object) this, new S2CTrashCanClearedPacket());
     }
+
+    @Shadow
+    protected abstract void incrementWindowID();
+
+    @Shadow
+    private int currentWindowId;
+
+    @Shadow
+    private NetServerHandler playerNetServerHandler;
 
     @Override
     public void openTrashCan() {
-        LOGGER.info("Opening trash can for player: {}", ((ServerPlayer) (Object) this).getEntityName());
+        if (this.openContainer != this.inventoryContainer) {
+            this.closeScreen();
+        }
+
+        this.incrementWindowID();
+        this.openContainer = new ContainerChest(this, this.getTrashCanInventory());
+        this.openContainer.windowId = this.currentWindowId;
+        this.openContainer.addCraftingToCrafters(this);
+
         Network.sendToClient((ServerPlayer) (Object) this, new S2COpenTrashCanPacket());
+        this.playerNetServerHandler.sendPacketToPlayer((new Packet100OpenWindow(this.currentWindowId, 0,
+                this.getTrashCanInventory().getCustomNameOrUnlocalized(), this.getTrashCanInventory().getSizeInventory(),
+                this.getTrashCanInventory().hasCustomName())).setCoords((int) this.posX, (int) this.posY, (int) this.posZ));
     }
 }

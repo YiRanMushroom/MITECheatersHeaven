@@ -8,6 +8,7 @@ import com.yiranmushroom.commands.SetHomeCommand
 import com.yiranmushroom.commands.TrashCanCommand
 import com.yiranmushroom.enchantments.Enchantments
 import com.yiranmushroom.item.Items;
+import com.yiranmushroom.network.MCHNetwork
 import com.yiranmushroom.scripting.Events;
 import net.xiaoyu233.fml.reload.event.CommandRegisterEvent
 import net.xiaoyu233.fml.reload.event.EnchantmentRegistryEvent
@@ -39,5 +40,10 @@ class MCHEventListener {
         event.register(DeleteHomeCommand())
         event.register(BackCommand())
         event.register(TrashCanCommand()) // Not implemented correctly.
+    }
+
+    @Subscribe
+    fun onPacketRegister(event: net.xiaoyu233.fml.reload.event.PacketRegisterEvent) {
+        MCHNetwork.init()
     }
 }

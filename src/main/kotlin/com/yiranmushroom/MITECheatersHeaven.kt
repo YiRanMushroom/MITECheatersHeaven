@@ -4,10 +4,12 @@ import com.yiranmushroom.config.MITECheatersHeavenConfig
 import com.yiranmushroom.container.IOpenTrashCan
 import com.yiranmushroom.event.MCHEventListener
 import com.yiranmushroom.mixin_helper.NightVision
+import com.yiranmushroom.network.C2S.C2SRequestOpenTrashCanPacket
 import com.yiranmushroom.network.MCHNetwork
 import com.yiranmushroom.scripting.ScriptingEngine
 import fi.dy.masa.malilib.config.ConfigManager
 import fi.dy.masa.malilib.event.InitializationHandler
+import moddedmite.rustedironcore.network.Network
 import net.fabricmc.api.ModInitializer
 import net.minecraft.ClientPlayer
 import net.minecraft.Minecraft
@@ -36,7 +38,7 @@ class MITECheatersHeaven : ModInitializer {
         //Register an event listening object
         MITEEvents.MITE_EVENT_BUS.register(MCHEventListener())
 
-        MCHNetwork.init()
+//        MCHNetwork.init()
     }
 
     fun preInit() {
@@ -52,11 +54,10 @@ class MITECheatersHeaven : ModInitializer {
         }
 
         MITECheatersHeavenConfig.OpenTrashCanHotKey.keybind.setCallback { _, _ ->
-            val player : ClientPlayer? = Minecraft.getClientPlayer()
-            (player as? IOpenTrashCan)?.openTrashCan()
+            Network.sendToServer(C2SRequestOpenTrashCanPacket())
             true
         }
-        
+
         ScriptingEngine.Init()
     }
 

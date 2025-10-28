@@ -6,6 +6,7 @@ import com.yiranmushroom.commands.IHomeCommandContext;
 //import com.yiranmushroom.container.ContainerTrashCan;
 import com.yiranmushroom.container.IGetTrashCanInventory;
 import com.yiranmushroom.container.IOpenTrashCan;
+import com.yiranmushroom.container.InventoryTrashCan;
 import com.yiranmushroom.enchantments.FlyingEnchantment;
 import com.yiranmushroom.mixin_helper.EntityPlayerScripting;
 import kotlin.Triple;
@@ -99,7 +100,7 @@ public abstract class EntityPlayerMixin extends EntityLivingBase implements IHom
     public void inj$constructor(World par1World, String par2Str, CallbackInfo ci) {
         LOGGER.info("EntityPlayerMixin: Constructor injected for player: {}", par2Str);
 
-        this.mixin$trashCan = new InventoryBasic("Trash Can", true, 27);
+        this.mixin$trashCan.destroyInventory();
     }
 
     @Inject(method = "setDead", at = @At("HEAD"))
@@ -189,7 +190,7 @@ public abstract class EntityPlayerMixin extends EntityLivingBase implements IHom
     }
 
     @Unique
-    public IInventory mixin$trashCan = null;
+    private IInventory mixin$trashCan = new InventoryTrashCan();
 
     @Override
     public @NotNull IInventory getTrashCanInventory() {

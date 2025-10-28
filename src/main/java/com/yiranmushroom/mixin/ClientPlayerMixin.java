@@ -8,7 +8,9 @@ import com.yiranmushroom.enchantments.FlyingEnchantment;
 import com.yiranmushroom.mixin_helper.ClientPlayerScripting;
 import net.minecraft.ClientPlayer;
 import net.minecraft.EntityPlayer;
+import net.minecraft.InventoryBasic;
 import net.minecraft.Minecraft;
+import net.xiaoyu233.fml.config.Configs;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,7 +28,7 @@ public abstract class ClientPlayerMixin implements IOpenTrashCan, IGetTrashCanIn
         if (transform != null) {
             var result = transform.invoke((ClientPlayer) (Object) this, ((ClientPlayer) (Object) this).openContainer, cir.getReturnValueI());
             cir.setReturnValue(result);
-        } // else do nothing
+        }
     }
 
     @ModifyExpressionValue(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/PlayerCapabilities;allowFlying:Z"))

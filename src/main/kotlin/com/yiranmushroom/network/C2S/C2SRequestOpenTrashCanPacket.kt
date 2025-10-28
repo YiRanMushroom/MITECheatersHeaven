@@ -1,29 +1,29 @@
-package com.yiranmushroom.network.S2C
+package com.yiranmushroom.network.C2S
 
 import com.yiranmushroom.MITECheatersHeaven
 import com.yiranmushroom.container.IOpenTrashCan
-import com.yiranmushroom.network.MCHNetwork
+import com.yiranmushroom.network.S2C.S2COpenTrashCanPacket
+import moddedmite.rustedironcore.network.Network
 import moddedmite.rustedironcore.network.Packet
 import moddedmite.rustedironcore.network.PacketByteBuf
-import net.minecraft.ClientPlayer
 import net.minecraft.EntityPlayer
 import net.minecraft.ResourceLocation
+import net.minecraft.ServerPlayer
 
-
-class S2COpenTrashCanPacket : Packet {
+class C2SRequestOpenTrashCanPacket : Packet {
     override fun write(p0: PacketByteBuf) {
         // No data to write
     }
 
     override fun apply(player: EntityPlayer) {
-        if (player is ClientPlayer) {
+        if (player is ServerPlayer) {
             if (player is IOpenTrashCan) {
                 player.openTrashCan()
             } else {
                 throw IllegalStateException("Player does not implement IOpenTrashCan!")
             }
         } else {
-            throw IllegalStateException("Player does not implement IOpenTrashCan!")
+            throw IllegalStateException("Player is not a ServerPlayer!")
         }
     }
 
@@ -32,6 +32,6 @@ class S2COpenTrashCanPacket : Packet {
     }
 
     companion object {
-        val ID = ResourceLocation(MITECheatersHeaven.MOD_ID, "s2c_open_trash_can")
+        val ID = ResourceLocation(MITECheatersHeaven.MOD_ID, "c2s_request_open_trash_can")
     }
 }

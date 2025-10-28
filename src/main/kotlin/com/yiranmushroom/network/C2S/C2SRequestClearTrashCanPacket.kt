@@ -2,7 +2,6 @@ package com.yiranmushroom.network.C2S
 
 import com.yiranmushroom.MITECheatersHeaven
 import com.yiranmushroom.container.IClearTrashCan
-import com.yiranmushroom.network.MCHNetwork
 import moddedmite.rustedironcore.network.Packet
 import moddedmite.rustedironcore.network.PacketByteBuf
 import net.minecraft.EntityPlayer
@@ -25,7 +24,7 @@ class C2SRequestClearTrashCanPacket : Packet {
     }
 
     override fun getChannel(): ResourceLocation {
-        return MCHNetwork.Channel
+        return ID
     }
 
     companion object {
