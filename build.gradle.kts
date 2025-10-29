@@ -52,6 +52,7 @@ dependencies {
     compileOnly(files("libs/RustedIronCore-$rusted_iron_core_version.jar"))
     compileOnly(files("libs/ManyLib-$manylib_version.jar"))
     compileOnly(files("libs/ModMenu-$modmenu_version.jar"))
+    compileOnly(files("libs/MITE-ITE-2.0.18.jar"))
 //    implementation(files("libs/Extreme-0.1.6.10.jar"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")

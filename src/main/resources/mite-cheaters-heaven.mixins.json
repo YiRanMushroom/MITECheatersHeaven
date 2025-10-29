@@ -22,11 +22,18 @@
     "ItemRockMixin",
     "MinecraftMixin",
     "MinecraftServerMixin",
+    "RustedIronCoreMixin",
     "ServerPlayerMixin",
     "SlotRepairOrEnchantConsumableMixin",
     "SpawnerAnimalsMixin",
-    "TileEntityHopperMixin"
+    "TileEntityHopperMixin",
+    "ite_mixin.EnumQualityMixin",
+    "ite_mixin.GuiContainerMixin",
+    "ite_mixin.GuiCraftingMixin",
+    "ite_mixin.ItemMixin",
+    "ite_mixin.SlotCraftingMixin"
   ],
+  "plugin": "com.yiranmushroom.MCHMixinPlugin",
   "injectors": {
     "defaultRequire": 1
   },

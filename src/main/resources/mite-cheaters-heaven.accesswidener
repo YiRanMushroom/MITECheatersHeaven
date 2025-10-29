@@ -1,3 +1,10 @@
 accessWidener v2 named
 
 accessible class net/minecraft/EntityAITaskEntry
+
+accessible class net/minecraft/SlotCrafting
+
+accessible method net/minecraft/SlotCrafting getNumCraftingResults (Lnet/minecraft/EntityPlayer;)I
+accessible field net/minecraft/GuiIngame MITE_icons Lnet/minecraft/ResourceLocation;
+accessible field net/minecraft/EnumQuality durability_modifier F
+accessible field net/minecraft/GuiCrafting craftingTableGuiTextures Lnet/minecraft/ResourceLocation;

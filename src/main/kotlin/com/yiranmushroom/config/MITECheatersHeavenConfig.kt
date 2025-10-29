@@ -31,7 +31,13 @@ class MITECheatersHeavenConfig : SimpleConfigs {
         var EnableDevModePrivilegeConfig = ConfigBoolean(
             "EnableDevModePrivilegeConfig",
             false, "Enable Dev Mode Privilege"
-        );
+        )
+
+        @JvmStatic
+        var TurnOffRustyIronCoreStatementConfig = ConfigBoolean(
+            "TurnOffRustyIronCoreStatementConfig",
+            true, "Turn off Rusty Iron Core statement when creating a new world"
+        )
 
         @JvmStatic
         var EnableDevModePrivilegeValue: Boolean
