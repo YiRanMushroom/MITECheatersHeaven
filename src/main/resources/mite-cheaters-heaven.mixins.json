@@ -20,6 +20,7 @@
     "GrowingPlantMixin",
     "ItemBowMixin",
     "ItemRockMixin",
+    "ItemStackMixin",
     "MinecraftMixin",
     "MinecraftServerMixin",
     "RustedIronCoreMixin",
