@@ -3,6 +3,7 @@ package com.yiranmushroom.event;
 import com.google.common.eventbus.Subscribe;
 import com.yiranmushroom.commands.BackCommand
 import com.yiranmushroom.commands.DeleteHomeCommand
+import com.yiranmushroom.commands.FlySpeedCommand
 import com.yiranmushroom.commands.HomeCommand
 import com.yiranmushroom.commands.SetHomeCommand
 import com.yiranmushroom.commands.TrashCanCommand
@@ -39,7 +40,8 @@ class MCHEventListener {
         event.register(SetHomeCommand())
         event.register(DeleteHomeCommand())
         event.register(BackCommand())
-        event.register(TrashCanCommand()) // Not implemented correctly.
+        event.register(TrashCanCommand())
+        event.register(FlySpeedCommand())
     }
 
     @Subscribe

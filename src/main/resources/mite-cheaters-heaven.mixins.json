@@ -24,6 +24,7 @@
     "MapGenVillageMixin",
     "MinecraftMixin",
     "MinecraftServerMixin",
+    "PlayerCapabilitiesMixin",
     "RustedIronCoreMixin",
     "ServerPlayerMixin",
     "SlotRepairOrEnchantConsumableMixin",

@@ -22,9 +22,15 @@ class MITECheatersHeavenConfig : SimpleConfigs {
         )
 
         @JvmStatic
-        var OpenTrashCanHotKey = ConfigHotkey(
-            "OpenTrashCanHotKey", Keyboard.KEY_H,
+        var OpenTrashCanHotkey = ConfigHotkey(
+            "OpenTrashCanHotKey", Keyboard.KEY_O,
             "This is the hotkey to open Trash Can GUI"
+        )
+
+        @JvmStatic
+        var ToggleFlySpeedHotkey = ConfigHotkey(
+            "ToggleFlySpeedHotkey", Keyboard.KEY_P,
+            "This is the hotkey to toggle Fly Speed Modifiers"
         )
 
         @JvmStatic

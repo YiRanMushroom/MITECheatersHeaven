@@ -1,20 +1,20 @@
 package com.yiranmushroom
 
+//import net.xiaoyu233.fml.ModResourceManager
 import com.yiranmushroom.config.MITECheatersHeavenConfig
-import com.yiranmushroom.container.IOpenTrashCan
 import com.yiranmushroom.event.MCHEventListener
+import com.yiranmushroom.mixin_helper.EntityClientPlayerFlySpeedMixinHelper
 import com.yiranmushroom.mixin_helper.NightVision
 import com.yiranmushroom.network.C2S.C2SRequestOpenTrashCanPacket
-import com.yiranmushroom.network.MCHNetwork
 import com.yiranmushroom.scripting.ScriptingEngine
 import fi.dy.masa.malilib.config.ConfigManager
 import fi.dy.masa.malilib.event.InitializationHandler
 import moddedmite.rustedironcore.network.Network
 import net.fabricmc.api.ModInitializer
-import net.minecraft.ClientPlayer
+import net.minecraft.ChatMessageComponent
+import net.minecraft.EnumChatFormatting
 import net.minecraft.Minecraft
 import net.xiaoyu233.fml.ModResourceManager
-//import net.xiaoyu233.fml.ModResourceManager
 import net.xiaoyu233.fml.reload.event.MITEEvents
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -47,14 +47,27 @@ class MITECheatersHeaven : ModInitializer {
         val config = MITECheatersHeavenConfig.Instance
         config.load()
         ConfigManager.getInstance().registerConfig(config)
-        MITECheatersHeavenConfig.NightVisionToggleHotkey.keybind.setCallback { _,_ ->
+        MITECheatersHeavenConfig.NightVisionToggleHotkey.keybind.setCallback { _, _ ->
             LOGGER.info("Toggling Night Vision")
             NightVision.enabled = !NightVision.enabled
             true
         }
 
-        MITECheatersHeavenConfig.OpenTrashCanHotKey.keybind.setCallback { _, _ ->
+        MITECheatersHeavenConfig.OpenTrashCanHotkey.keybind.setCallback { _, _ ->
             Network.sendToServer(C2SRequestOpenTrashCanPacket())
+            true
+        }
+
+        MITECheatersHeavenConfig.ToggleFlySpeedHotkey.keybind.setCallback { _, _ ->
+            EntityClientPlayerFlySpeedMixinHelper.roundRobinSpeed()
+            // send chat message to inform the player about the new fly speed
+            val clientPlayer = Minecraft.getClientPlayer() ?: return@setCallback true
+            val multiplier = EntityClientPlayerFlySpeedMixinHelper.modifyFlySpeed(1f)
+            clientPlayer.sendChatToPlayer(
+                ChatMessageComponent()
+                    .addText("Fly Speed Multiplier: ")
+                    .addText(multiplier.toString()).setColor(EnumChatFormatting.GREEN)
+            )
             true
         }
 

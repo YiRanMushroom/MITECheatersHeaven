@@ -4,6 +4,7 @@ import com.yiranmushroom.MITECheatersHeaven
 import com.yiranmushroom.network.C2S.C2SRequestClearTrashCanPacket
 import com.yiranmushroom.network.C2S.C2SRequestOpenTrashCanPacket
 import com.yiranmushroom.network.C2S.C2SRequestTrashCanSyncPacket
+import com.yiranmushroom.network.S2C.S2CFlySpeedModifyPacket
 import com.yiranmushroom.network.S2C.S2COpenTrashCanPacket
 import com.yiranmushroom.network.S2C.S2CTrashCanClearedPacket
 import moddedmite.rustedironcore.network.PacketReader
@@ -18,6 +19,7 @@ object MCHNetwork {
         PacketReader.registerClientPacketReader(S2CTrashCanClearedPacket.ID) { buffer ->
             S2CTrashCanClearedPacket()
         }
+        PacketReader.registerClientPacketReader(S2CFlySpeedModifyPacket.ID, ::S2CFlySpeedModifyPacket)
     }
 
     fun registerServerPacketListeners() {
