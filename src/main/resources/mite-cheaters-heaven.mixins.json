@@ -9,6 +9,7 @@
     "BlockFurnaceNetherrackMixin",
     "BlockFurnaceObsidianMixin",
     "BlockLeavesMixin",
+    "BlockMixin",
     "ClientPlayerMixin",
     "ContainerEnchantmentMixin",
     "ContainerRepairMixin",
