@@ -5,10 +5,11 @@ import com.yiranmushroom.scripting.Events
 import net.minecraft.Item
 import net.minecraft.Material
 import net.xiaoyu233.fml.reload.event.ItemRegistryEvent
+import net.xiaoyu233.fml.reload.utils.IdUtil.getNextItemID
 
 object Items {
     @JvmStatic
-    val lavaInPipes = LavaInPipes(4070, Material.lava).setUnlocalizedName("lava_in_pipes")
+    val lavaInPipes = LavaInPipes(getNextItemID(), Material.lava).setUnlocalizedName("lava_in_pipes")
 
     @JvmStatic
     val modManagedItems = mutableMapOf<String, MutableList<Item>>()

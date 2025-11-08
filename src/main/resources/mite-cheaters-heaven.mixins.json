@@ -5,6 +5,8 @@
   "target": "DEFAULT",
   "mixins": [
     "BiomeDecoratorMixin",
+    "BlockAddSmeltingMixin",
+    "BlockBreakInfoAddSmeltingMixin",
     "BlockCropsMixin",
     "BlockFurnaceNetherrackMixin",
     "BlockFurnaceObsidianMixin",
@@ -21,6 +23,7 @@
     "EntityRendererMixin",
     "GrowingPlantMixin",
     "ItemBowMixin",
+    "ItemInWorldManagerChainingMixin",
     "ItemRockMixin",
     "ItemStackMixin",
     "MapGenVillageMixin",

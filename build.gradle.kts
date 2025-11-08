@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 val mod_version: String by project
 val maven_group: String by project
 val loader_version: String by project
@@ -17,8 +19,6 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
     `maven-publish`
 }
-
-
 
 version = mod_version
 group = maven_group
@@ -53,20 +53,12 @@ dependencies {
     compileOnly(files("libs/ManyLib-$manylib_version.jar"))
     compileOnly(files("libs/ModMenu-$modmenu_version.jar"))
     compileOnly(files("libs/MITE-ITE-2.0.18.jar"))
-//    implementation(files("libs/Extreme-0.1.6.10.jar"))
+    compileOnly(files("libs/Extreme-0.1.6.10.jar"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
     implementation("org.jetbrains.kotlin:kotlin-scripting-common:$kotlin_version")
     implementation("org.jetbrains.kotlin:kotlin-scripting-jvm:$kotlin_version")
     implementation("org.jetbrains.kotlin:kotlin-scripting-jvm-host:$kotlin_version")
-//    implementation("org.jetbrains.kotlin:kotlin-script-runtime:$kotlin_version")
-
-//    implementation("org.jetbrains.kotlin:kotlin-scripting-jsr223:$kotlin_version")
-//    implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlin_version")
-//    implementation("org.jetbrains.kotlin:kotlin-scripting-dependencies:$kotlin_version")
-//    implementation("org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:$kotlin_version")
-//    implementation("org.jetbrains.kotlin:kotlin-scripting-compiler-impl:$kotlin_version")
-//    implementation("org.jetbrains.kotlin:kotlin-compiler:$kotlin_version")
 
     // coroutine
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
@@ -94,29 +86,7 @@ tasks.withType<Jar> {
     from("LICENSE") { rename { "${it}_${inputs.properties["archivesName"]}" } }
 }
 
-tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
-//    archiveClassifier.set("")
-//    mergeServiceFiles()
-//
-//    from(zipTree(file("libs/trove.jar")))
-//
-//    dependencies {
-//        include(dependency("org.jetbrains.kotlin:kotlin-stdlib"))
-//        include(dependency("org.jetbrains.kotlin:kotlin-reflect"))
-//        include(dependency("org.jetbrains.kotlin:kotlin-scripting-common"))
-//        include(dependency("org.jetbrains.kotlin:kotlin-scripting-jvm"))
-//        include(dependency("org.jetbrains.kotlin:kotlin-scripting-jvm-host"))
-////        include(dependency("org.jetbrains.kotlin:kotlin-script-runtime"))
-//
-////        include(dependency("org.jetbrains.kotlin:kotlin-scripting-jsr223"))
-////        include(dependency("org.jetbrains.kotlin:kotlin-compiler-embeddable"))
-////        include(dependency("org.jetbrains.kotlin:kotlin-scripting-dependencies"))
-////        include(dependency("org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable"))
-////        include(dependency("org.jetbrains.kotlin:kotlin-scripting-compiler-impl"))
-////        include(dependency("org.jetbrains.kotlin:kotlin-compiler"))
-//
-//        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core"))
-//    }
+tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("")
     mergeServiceFiles()
     configurations = listOf(project.configurations.runtimeClasspath.get())

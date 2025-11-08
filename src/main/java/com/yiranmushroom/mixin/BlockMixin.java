@@ -22,7 +22,6 @@ public abstract class BlockMixin {
                                                 @Local(name = "chance") LocalFloatRef chance,
                                                 @Local(name = "item_stack") ItemStack item_stack,
                                                 @Local(name = "damage") int damage) {
-//        chance.set(chance.get() - 1.0f); // Decrease the chance by 1.0f, because it is already dropped one.
         var mean = chance.get();
         chance.set(0.0f);
 
