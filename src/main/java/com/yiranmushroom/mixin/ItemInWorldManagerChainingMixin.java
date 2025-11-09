@@ -3,6 +3,7 @@ package com.yiranmushroom.mixin;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.yiranmushroom.api.IIsNextChaining;
 import com.yiranmushroom.enchantments.ChainingEnchantment;
+import com.yiranmushroom.mixin_helper.ChainingDropPositionLockHelper;
 import kotlin.Triple;
 import net.minecraft.*;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,34 +28,32 @@ public abstract class ItemInWorldManagerChainingMixin implements IIsNextChaining
     @Shadow
     public World theWorld;
     @Unique
-    private boolean ith$suppressChaining = false;
+    private boolean ith$isChaining = false;
+
+    @Unique
+    private static final int[] ith$chainingStartPos = new int[]{0, 0, 0};
 
     @Inject(method = "tryHarvestBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/Block;dropBlockAsItself(Lnet/minecraft/BlockBreakInfo;)I"))
     private void ith$chaining$afterSilkTouch(int x, int y, int z,
                                              CallbackInfoReturnable<Boolean> cir,
                                              @Local(name = "block_break_info") BlockBreakInfo blockBreakInfo,
                                              @Local(name = "block") Block block) {
-        if (ith$suppressChaining) {
-            return;
-        }
+        ith$handleChaining(x, y, z, block);
+    }
 
-        if ((nextChainingAndNotify()
-                && ChainingEnchantment.isBlockSupported(block))) {
-            var positions = ith$getChainedPositions(x, y, z,
-                    block);
-            this.ith$suppressChaining = true;
-            for (var pos : positions) {
-                this.tryHarvestBlock(pos.getFirst(), pos.getSecond(), pos.getThird());
-            }
-            this.ith$suppressChaining = false;
-        }
+    @Inject(method = "tryHarvestBlock", at = @At(value = "FIELD", target = "Lnet/minecraft/BlockBreakInfo;block:Lnet/minecraft/Block;"))
+    private void ith$modifyDropPosition(int x, int y, int z, CallbackInfoReturnable<Boolean> cir, @Local(name = "block_break_info") BlockBreakInfo blockBreakInfo) {
     }
 
     @Inject(method = "tryHarvestBlock", at = @At(value = "INVOKE", target = "Lnet/minecraft/Block;dropBlockAsEntityItem(Lnet/minecraft/BlockBreakInfo;)I"))
     private void ith$chaining$afterFortune(int x, int y, int z, CallbackInfoReturnable<Boolean> cir,
                                            @Local(name = "block_break_info") BlockBreakInfo blockBreakInfo,
                                            @Local(name = "block") Block block) {
-        if (ith$suppressChaining) {
+        ith$handleChaining(x, y, z, block);
+    }
+
+    private void ith$handleChaining(int x, int y, int z, @Local(name = "block") Block block) {
+        if (ith$isChaining) {
             return;
         }
 
@@ -62,11 +61,16 @@ public abstract class ItemInWorldManagerChainingMixin implements IIsNextChaining
                 && ChainingEnchantment.isBlockSupported(block))) {
             var positions = ith$getChainedPositions(x, y, z,
                     block);
-            this.ith$suppressChaining = true;
+            this.ith$isChaining = true;
+            ChainingDropPositionLockHelper.isPositionLocked = true;
+            ChainingDropPositionLockHelper.lockedX = x;
+            ChainingDropPositionLockHelper.lockedY = y;
+            ChainingDropPositionLockHelper.lockedZ = z;
             for (var pos : positions) {
                 this.tryHarvestBlock(pos.getFirst(), pos.getSecond(), pos.getThird());
             }
-            this.ith$suppressChaining = false;
+            ChainingDropPositionLockHelper.isPositionLocked = false;
+            this.ith$isChaining = false;
         }
     }
 
