@@ -1,6 +1,6 @@
 package com.yiranmushroom.network
 
-import com.yiranmushroom.MITECheatersHeaven
+import com.yiranmushroom.network.C2S.C2SRequestChangeChainingStatePacket
 import com.yiranmushroom.network.C2S.C2SRequestClearTrashCanPacket
 import com.yiranmushroom.network.C2S.C2SRequestOpenTrashCanPacket
 import com.yiranmushroom.network.C2S.C2SRequestTrashCanSyncPacket
@@ -8,7 +8,6 @@ import com.yiranmushroom.network.S2C.S2CFlySpeedModifyPacket
 import com.yiranmushroom.network.S2C.S2COpenTrashCanPacket
 import com.yiranmushroom.network.S2C.S2CTrashCanClearedPacket
 import moddedmite.rustedironcore.network.PacketReader
-import net.minecraft.ResourceLocation
 import net.xiaoyu233.fml.FishModLoader
 
 object MCHNetwork {
@@ -32,6 +31,10 @@ object MCHNetwork {
         PacketReader.registerServerPacketReader(C2SRequestTrashCanSyncPacket.ID) { buffer ->
             C2SRequestTrashCanSyncPacket()
         }
+        PacketReader.registerServerPacketReader(
+            C2SRequestChangeChainingStatePacket.ID,
+            ::C2SRequestChangeChainingStatePacket
+        )
     }
 
     fun init() {

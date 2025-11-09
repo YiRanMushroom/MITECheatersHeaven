@@ -2,7 +2,7 @@ package com.yiranmushroom.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.yiranmushroom.enchantments.ChainingEnchantment;
-import com.yiranmushroom.enchantments.Enchantments;
+import com.yiranmushroom.enchantments.IDoChaining;
 import kotlin.Triple;
 import net.minecraft.*;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,7 +38,7 @@ public abstract class ItemInWorldManagerChainingMixin {
             return;
         }
 
-        if (EnchantmentHelper.getEnchantmentLevel(Enchantments.chainingEnchant, thisPlayerMP.getHeldItemStack()) > 0
+        if (((IDoChaining) (Object) thisPlayerMP).doChaining()
                 && ChainingEnchantment.isBlockSupported(block)) {
             var positions = ith$getChainedPositions(x, y, z,
                     block);
@@ -58,7 +58,7 @@ public abstract class ItemInWorldManagerChainingMixin {
             return;
         }
 
-        if (EnchantmentHelper.getEnchantmentLevel(Enchantments.chainingEnchant, thisPlayerMP.getHeldItemStack()) > 0
+        if (((IDoChaining) (Object) thisPlayerMP).doChaining()
                 && ChainingEnchantment.isBlockSupported(block)) {
             var positions = ith$getChainedPositions(x, y, z,
                     block);

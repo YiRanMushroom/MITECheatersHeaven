@@ -25,9 +25,23 @@ class ChainingEnchantment(id: Int, difficulty: Int) : Enchantment(id, EnumRarity
                 it is ItemPickaxe || it is ItemAxe
             }
         )
+
+        private val supportedBlockMap = mutableMapOf<Int, (Block) -> Boolean>(
+            Block.gravel.blockID to { true },
+        )
+
+        @JvmStatic
+        public fun addSupportedBlock(
+            blockID: Int,
+            checker: (Block) -> Boolean = { true }
+        ) {
+            supportedBlockMap[blockID] = checker
+        }
+
         private val supportedBlocksChecker = mutableListOf<(Block) -> Boolean>(
             {
-                it is BlockOre || it is BlockLog || it is BlockLeaves || it is BlockRedstoneOre
+                it is BlockOre || it is BlockLog || it is BlockLeaves || it is BlockRedstoneOre ||
+                        supportedBlockMap[it.blockID]?.invoke(it) == true
             }
         )
 
@@ -37,9 +51,6 @@ class ChainingEnchantment(id: Int, difficulty: Int) : Enchantment(id, EnumRarity
             },
             { block1, block2 ->
                 block1 is BlockRedstoneOre && block2 is BlockRedstoneOre
-            },
-            { block1, block2 ->
-                block1 is BlockLog && block2 is BlockLeaves // order matters
             }
         )
 
@@ -71,4 +82,9 @@ class ChainingEnchantment(id: Int, difficulty: Int) : Enchantment(id, EnumRarity
         @JvmField
         public var maxChainingCount = 256
     }
+}
+
+interface IDoChaining {
+    fun doChaining(): Boolean
+    fun requestChaining(on: Boolean)
 }

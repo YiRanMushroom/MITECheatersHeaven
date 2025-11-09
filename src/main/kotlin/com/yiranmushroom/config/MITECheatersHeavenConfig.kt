@@ -6,7 +6,9 @@ import fi.dy.masa.malilib.config.options.ConfigBase
 import fi.dy.masa.malilib.config.options.ConfigBoolean
 import fi.dy.masa.malilib.config.options.ConfigHotkey
 import net.minecraft.GuiScreen
+import net.minecraft.KeyBinding
 import org.lwjgl.input.Keyboard
+import org.lwjgl.input.Mouse
 
 class MITECheatersHeavenConfig : SimpleConfigs {
     constructor(name: String, hotkeys: List<ConfigHotkey>, values: List<ConfigBase<*>>) : super(name, hotkeys, values)
@@ -34,6 +36,12 @@ class MITECheatersHeavenConfig : SimpleConfigs {
         )
 
         @JvmStatic
+        var EnableChainingHotkey : KeyBinding = KeyBinding(
+            "key.miteith.enablechaining",
+            Keyboard.KEY_LMENU,
+        )
+
+        @JvmStatic
         var EnableDevModePrivilegeConfig = ConfigBoolean(
             "EnableDevModePrivilegeConfig",
             false, "Enable Dev Mode Privilege"
@@ -44,6 +52,10 @@ class MITECheatersHeavenConfig : SimpleConfigs {
             "TurnOffRustyIronCoreStatementConfig",
             true, "Turn off Rusty Iron Core statement when creating a new world"
         )
+
+        @JvmStatic
+        var AlwaysAllowChaining = ConfigBoolean("AlwaysAllowChaining",
+            true, "Always allow Chaining no matter what tool is used")
 
         @JvmStatic
         var EnableDevModePrivilegeValue: Boolean
