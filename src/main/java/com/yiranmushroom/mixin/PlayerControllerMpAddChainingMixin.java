@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(PlayerControllerMP.class)
 public class PlayerControllerMpAddChainingMixin {
     @WrapOperation(method = "sendDiggingPacket", at = @At(value = "INVOKE", target = "Lnet/minecraft/PlayerControllerMP;sendPacket(Lnet/minecraft/Packet;)V"))
-    // second one
     private void ith$warpAddChaining(PlayerControllerMP instance, Packet packet, Operation<Void> original) {
         if (!(packet instanceof Packet85SimpleSignal)) {
             MITECheatersHeaven.getLOGGER().error("Expected Packet85SimpleSignal, but got: {}", packet.getClass().getName());
