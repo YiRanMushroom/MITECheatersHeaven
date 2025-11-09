@@ -1,8 +1,8 @@
 package com.yiranmushroom.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import com.yiranmushroom.api.IIsNextChaining;
 import com.yiranmushroom.enchantments.ChainingEnchantment;
-import com.yiranmushroom.enchantments.IDoChaining;
 import kotlin.Triple;
 import net.minecraft.*;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 @Mixin(ItemInWorldManager.class)
-public abstract class ItemInWorldManagerChainingMixin {
+public abstract class ItemInWorldManagerChainingMixin implements IIsNextChaining {
     @Shadow
     public ServerPlayer thisPlayerMP;
 
@@ -38,8 +38,8 @@ public abstract class ItemInWorldManagerChainingMixin {
             return;
         }
 
-        if (((IDoChaining) (Object) thisPlayerMP).doChaining()
-                && ChainingEnchantment.isBlockSupported(block)) {
+        if ((nextChainingAndNotify()
+                && ChainingEnchantment.isBlockSupported(block))) {
             var positions = ith$getChainedPositions(x, y, z,
                     block);
             this.ith$suppressChaining = true;
@@ -58,8 +58,8 @@ public abstract class ItemInWorldManagerChainingMixin {
             return;
         }
 
-        if (((IDoChaining) (Object) thisPlayerMP).doChaining()
-                && ChainingEnchantment.isBlockSupported(block)) {
+        if ((nextChainingAndNotify()
+                && ChainingEnchantment.isBlockSupported(block))) {
             var positions = ith$getChainedPositions(x, y, z,
                     block);
             this.ith$suppressChaining = true;
@@ -120,5 +120,28 @@ public abstract class ItemInWorldManagerChainingMixin {
             }
         }
         return toHarvest;
+    }
+
+    boolean ith$nextChaining = false;
+
+    @Override
+    public boolean isNextChaining() {
+        return ith$nextChaining;
+    }
+
+    @Override
+    public void setNextChaining(boolean nextChaining) {
+        ith$nextChaining = nextChaining;
+    }
+
+    @Override
+    public void notifyChainingDone() {
+        ith$nextChaining = false;
+    }
+
+    private boolean nextChainingAndNotify() {
+        boolean result = ith$nextChaining;
+        ith$nextChaining = false;
+        return result;
     }
 }

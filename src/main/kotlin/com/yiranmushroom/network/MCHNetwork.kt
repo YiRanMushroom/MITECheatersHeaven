@@ -1,6 +1,6 @@
 package com.yiranmushroom.network
 
-import com.yiranmushroom.network.C2S.C2SRequestChangeChainingStatePacket
+//import com.yiranmushroom.network.C2S.C2SRequestChangeChainingStatePacket
 import com.yiranmushroom.network.C2S.C2SRequestClearTrashCanPacket
 import com.yiranmushroom.network.C2S.C2SRequestOpenTrashCanPacket
 import com.yiranmushroom.network.C2S.C2SRequestTrashCanSyncPacket
@@ -31,10 +31,10 @@ object MCHNetwork {
         PacketReader.registerServerPacketReader(C2SRequestTrashCanSyncPacket.ID) { buffer ->
             C2SRequestTrashCanSyncPacket()
         }
-        PacketReader.registerServerPacketReader(
+/*        PacketReader.registerServerPacketReader(
             C2SRequestChangeChainingStatePacket.ID,
             ::C2SRequestChangeChainingStatePacket
-        )
+        )*/
     }
 
     fun init() {

@@ -1,3 +1,4 @@
+/*
 package com.yiranmushroom.network.C2S
 
 import com.yiranmushroom.MITECheatersHeaven
@@ -43,4 +44,4 @@ class C2SRequestChangeChainingStatePacket : Packet {
         @JvmStatic
         val ID = ResourceLocation(MITECheatersHeaven.MOD_ID, "c2s_request_change_chaining_state")
     }
-}
+}*/

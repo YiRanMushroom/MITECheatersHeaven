@@ -1,3 +1,4 @@
+/*
 package com.yiranmushroom.mixin;
 
 import com.yiranmushroom.config.MITECheatersHeavenConfig;
@@ -28,3 +29,4 @@ public class ServerPlayerCheckChainingMixin implements IDoChaining {
         ith$wantToChain = on;
     }
 }
+*/

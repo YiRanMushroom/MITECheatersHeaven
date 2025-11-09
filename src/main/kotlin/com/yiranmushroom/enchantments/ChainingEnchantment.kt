@@ -84,7 +84,8 @@ class ChainingEnchantment(id: Int, difficulty: Int) : Enchantment(id, EnumRarity
     }
 }
 
+/*
 interface IDoChaining {
     fun doChaining(): Boolean
     fun requestChaining(on: Boolean)
-}
+}*/

@@ -1,3 +1,4 @@
+/*
 package com.yiranmushroom.mixin;
 
 import com.yiranmushroom.config.MITECheatersHeavenConfig;
@@ -35,3 +36,4 @@ public class ClientPlayerNotifyChainingChangeMixin implements IDoChaining {
         Network.sendToServer(new C2SRequestChangeChainingStatePacket(on));
     }
 }
+*/
