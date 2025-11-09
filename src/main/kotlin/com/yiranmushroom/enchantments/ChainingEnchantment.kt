@@ -28,6 +28,9 @@ class ChainingEnchantment(id: Int, difficulty: Int) : Enchantment(id, EnumRarity
 
         private val supportedBlockMap = mutableMapOf<Int, (Block) -> Boolean>(
             Block.gravel.blockID to { true },
+            Block.blockClay.blockID to { true },
+            Block.tallGrass.blockID to { true },
+            Block.obsidian.blockID to { true },
         )
 
         @JvmStatic

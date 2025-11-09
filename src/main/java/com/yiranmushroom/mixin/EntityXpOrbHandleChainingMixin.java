@@ -17,6 +17,8 @@ public class EntityXpOrbHandleChainingMixin {
                     ChainingDropPositionLockHelper.lockedX + 0.5,
                     ChainingDropPositionLockHelper.lockedY + 0.5,
                     ChainingDropPositionLockHelper.lockedZ + 0.5);
+        } else {
+            original.call(instance, x, y, z);
         }
     }
 }
