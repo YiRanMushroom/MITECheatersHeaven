@@ -43,7 +43,7 @@
     "TileEntityHopperMixin",
     "WorldGenMinableMixin",
     "ite_mixin.EnumQualityMixin",
-    "ite_mixin.GuiContainerMixin",
+    "ite_mixin.ForgingRecipeNoFailMixin",
     "ite_mixin.GuiCraftingMixin",
     "ite_mixin.ItemMixin",
     "ite_mixin.SlotCraftingMixin"
