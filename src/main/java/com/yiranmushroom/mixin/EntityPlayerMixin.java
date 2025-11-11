@@ -1,15 +1,12 @@
 package com.yiranmushroom.mixin;
 
-import com.google.gson.Gson;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.yiranmushroom.commands.IHomeCommandContext;
-//import com.yiranmushroom.container.ContainerTrashCan;
 import com.yiranmushroom.container.IGetTrashCanInventory;
-import com.yiranmushroom.container.IOpenTrashCan;
 import com.yiranmushroom.container.InventoryTrashCan;
 import com.yiranmushroom.enchantments.FlyingEnchantment;
 import com.yiranmushroom.mixin_helper.EntityPlayerScripting;
-import kotlin.Triple;
+import com.yiranmushroom.mixin_helper.ExactPlayerPositionInfo;
 import net.minecraft.*;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,23 +73,42 @@ public abstract class EntityPlayerMixin extends EntityLivingBase implements IHom
 
     @Inject(method = "readEntityFromNBT", at = @At("HEAD"))
     public void inj$readEntityFromNBT(net.minecraft.NBTTagCompound nbt, CallbackInfo ci) {
-        if (nbt.hasKey("regenerationAmount")) {
+        if (nbt.hasKey("ith$regenerationAmount")) {
             this.mixin$regenerationAmount = nbt.getFloat("regenerationAmount");
         } else {
             this.mixin$regenerationAmount = 0f;
         }
 
-        if (nbt.hasKey("homeCommandContext")) {
-            String json = nbt.getString("homeCommandContext");
-            Gson gson = new Gson();
-            Map<String, List<Double>> tempMap = gson.fromJson(json, Map.class);
-            for (Map.Entry<String, List<Double>> entry : tempMap.entrySet()) {
-                List<Double> coords = entry.getValue();
-                if (coords.size() == 3) {
-                    mixin$homeCommandContext.put(entry.getKey(), new Triple<>(coords.get(0), coords.get(1), coords.get(2)));
+        if (nbt.hasKey("ith$homePositionInfo")) {
+            var nbtCompound = nbt.getCompoundTag("ith$homePositionInfo");
+            for (Object nbtTag : nbtCompound.getTags()) {
+                if (nbtTag instanceof NBTTagCompound nbtTagCompound) {
+                    ith$homePositionInfo.put(nbtTagCompound.getName(), ExactPlayerPositionInfo.fromNBT(nbtTagCompound));
                 }
             }
         }
+
+        if (nbt.hasKey("ith$backPositionInfo")) {
+            this.ith$backPositionInfo = ExactPlayerPositionInfo.fromNBT(nbt.getCompoundTag("ith$backPositionInfo"));
+        } else {
+            this.ith$backPositionInfo = null;
+        }
+    }
+
+    @Inject(method = "writeEntityToNBT", at = @At("RETURN"))
+    public void inj$writeEntityToNBT(net.minecraft.NBTTagCompound nbt, CallbackInfo ci) {
+        nbt.setFloat("ith$regenerationAmount", this.mixin$regenerationAmount);
+
+        NBTTagCompound homePosNbt = new NBTTagCompound();
+
+        for (var entry : ith$homePositionInfo.entrySet()) {
+            homePosNbt.setTag(entry.getKey(), entry.getValue().toNBT());
+        }
+
+        nbt.setTag("ith$homePositionInfo", homePosNbt);
+
+        if (this.ith$backPositionInfo != null)
+            nbt.setCompoundTag("ith$backPositionInfo", this.ith$backPositionInfo.toNBT());
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
@@ -103,33 +118,16 @@ public abstract class EntityPlayerMixin extends EntityLivingBase implements IHom
         this.mixin$trashCan.destroyInventory();
     }
 
-    @Inject(method = "setDead", at = @At("HEAD"))
-    public void inj$setDead(CallbackInfo ci) {
-        this.mixin$backCoordinates = new Triple<>(
-                this.posX,
-                this.posY,
-                this.posZ
-        );
-    }
-
-    @Inject(method = "writeEntityToNBT", at = @At("RETURN"))
-    public void inj$writeEntityToNBT(net.minecraft.NBTTagCompound nbt, CallbackInfo ci) {
-        nbt.setFloat("regenerationAmount", this.mixin$regenerationAmount);
-
-        Gson gson = new Gson();
-        Map<String, List<Double>> tempMap = new HashMap<>();
-        for (Map.Entry<String, Triple<Double, Double, Double>> entry : mixin$homeCommandContext.entrySet()) {
-            Triple<Double, Double, Double> coords = entry.getValue();
-            tempMap.put(entry.getKey(), List.of(coords.getFirst(), coords.getSecond(), coords.getThird()));
-        }
-        String json = gson.toJson(tempMap);
-        nbt.setString("homeCommandContext", json);
+    @Override
+    protected void onDeathUpdate() {
+        this.ith$backPositionInfo = this.getCurrentExactPositionInfo();
+        super.onDeathUpdate();
     }
 
     @Inject(method = "clonePlayer", at = @At("RETURN"))
     public void inj$clonePlayer(EntityPlayer oldPlayer, boolean respawnFromEnd, CallbackInfo ci) {
-        this.mixin$homeCommandContext = ((EntityPlayerMixin) (Object) oldPlayer).mixin$homeCommandContext;
-        this.mixin$backCoordinates = ((EntityPlayerMixin) (Object) oldPlayer).mixin$backCoordinates;
+        this.ith$homePositionInfo = ((EntityPlayerMixin) (Object) oldPlayer).ith$homePositionInfo;
+        this.ith$backPositionInfo = ((EntityPlayerMixin) (Object) oldPlayer).ith$backPositionInfo;
     }
 
     @Unique
@@ -154,39 +152,59 @@ public abstract class EntityPlayerMixin extends EntityLivingBase implements IHom
     }
 
     @Unique
-    private Map<String, Triple<Double, Double, Double>> mixin$homeCommandContext = new HashMap<String, Triple<Double, Double, Double>>();
+    private Map<String, ExactPlayerPositionInfo> ith$homePositionInfo = new HashMap<>();
+
+    @Override
+    public @NotNull ExactPlayerPositionInfo getCurrentExactPositionInfo() {
+        return new ExactPlayerPositionInfo(
+                this.posX,
+                this.posY,
+                this.posZ,
+                this.rotationYaw,
+                this.rotationPitch,
+                this.dimension
+        );
+    }
+
+    @Override
+    public void setPlayerToExactPositionInfo(ExactPlayerPositionInfo info) {
+        if (info.getDimensionId() != this.dimension)
+            this.travelToDimension(info.getDimensionId());
+        this.setRotation(info.getYaw(), info.getPitch());
+        this.setPositionAndUpdate(info.getX(), info.getY(), info.getZ());
+    }
 
     @Unique
-    private Triple<Double, Double, Double> mixin$backCoordinates = null;
+    private ExactPlayerPositionInfo ith$backPositionInfo = null;
 
     @Override
     public @NotNull List<String> getHomeNames() {
-        return mixin$homeCommandContext.keySet().stream().toList();
+        return ith$homePositionInfo.keySet().stream().toList();
     }
 
     @Override
-    public Triple<Double, Double, Double> getHomeCoordinates(@NotNull String name) {
-        return mixin$homeCommandContext.get(name);
+    public ExactPlayerPositionInfo getHomeExactPosition(@NotNull String name) {
+        return ith$homePositionInfo.get(name);
     }
 
     @Override
-    public void setHomeCoordinates(@NotNull String name, @NotNull Triple<Double, Double, Double> coordinates) {
-        mixin$homeCommandContext.put(name, coordinates);
+    public void setHomeExactPosition(@NotNull String name, @NotNull ExactPlayerPositionInfo info) {
+        ith$homePositionInfo.put(name, info);
     }
 
     @Override
     public boolean deleteHome(@NotNull String name) {
-        return mixin$homeCommandContext.remove(name) != null;
+        return ith$homePositionInfo.remove(name) != null;
     }
 
     @Override
-    public Triple<Double, Double, Double> getBackCoordinates() {
-        return mixin$backCoordinates;
+    public ExactPlayerPositionInfo getBackExactPosition() {
+        return ith$backPositionInfo;
     }
 
     @Override
-    public void setBackCoordinates(Triple<Double, Double, Double> coordinates) {
-        mixin$backCoordinates = coordinates;
+    public void setBackExactPosition(@NotNull ExactPlayerPositionInfo info) {
+        ith$backPositionInfo = info;
     }
 
     @Unique

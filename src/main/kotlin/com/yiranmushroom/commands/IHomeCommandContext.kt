@@ -1,11 +1,16 @@
 package com.yiranmushroom.commands
 
+import com.yiranmushroom.mixin_helper.ExactPlayerPositionInfo
+
 
 interface IHomeCommandContext {
     fun getHomeNames(): List<String>
-    fun getHomeCoordinates(homeName: String): Triple<Double, Double, Double>?
-    fun setHomeCoordinates(homeName: String, coordinates: Triple<Double, Double, Double>)
+    fun getHomeExactPosition(homeName: String): ExactPlayerPositionInfo?
+    fun setHomeExactPosition(homeName: String, position: ExactPlayerPositionInfo)
     fun deleteHome(homeName: String): Boolean
-    fun getBackCoordinates(): Triple<Double, Double, Double>?
-    fun setBackCoordinates(coordinates: Triple<Double, Double, Double>)
+    fun getBackExactPosition(): ExactPlayerPositionInfo?
+    fun setBackExactPosition(position: ExactPlayerPositionInfo)
+
+    fun getCurrentExactPositionInfo(): ExactPlayerPositionInfo
+    fun setPlayerToExactPositionInfo(positionInfo: ExactPlayerPositionInfo)
 }

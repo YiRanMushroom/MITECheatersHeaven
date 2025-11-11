@@ -33,7 +33,7 @@ repositories {
 loom {
     accessWidenerPath.set(file("src/main/resources/$mod_id.accesswidener"))
     mergedMinecraftJar()
-    setFML(File("libs/FishModLoader-v$loader_version.jar"))
+    fml = File("libs/FishModLoader-v$loader_version.jar")
     mods {
         create(mod_id) { sourceSet(sourceSets.main.get()) }
     }
@@ -46,7 +46,7 @@ tasks.named<JavaExec>("runClient") {
 dependencies {
     minecraft("com.mojang:minecraft:$minecraft_version")
     mappings(loom.fmlMCPMappings())
-    implementation(files(loom.getFML().toPath()))
+    implementation(files(loom.fml.toPath()))
     implementation("it.unimi.dsi:fastutil:8.5.12")
     implementation("com.google.code.gson:gson:2.11.0")
     compileOnly(files("libs/RustedIronCore-$rusted_iron_core_version.jar"))

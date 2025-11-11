@@ -1,6 +1,7 @@
 package com.yiranmushroom.commands
 
 import com.yiranmushroom.MITECheatersHeaven.Companion.LOGGER
+import com.yiranmushroom.mixin_helper.ExactPlayerPositionInfo
 import net.minecraft.*
 
 class HomeCommand : CommandBase() {
@@ -31,9 +32,9 @@ class HomeCommand : CommandBase() {
         if (iCommandSender is IHomeCommandContext) {
             var homeName: String? = null
             // If no home name is provided, teleport to default home "@home"
-            val coordinate: Triple<Double, Double, Double>?
+            val positionInfo: ExactPlayerPositionInfo?
             if (strings.isEmpty()) {
-                coordinate = iCommandSender.getHomeCoordinates("@home")
+                positionInfo = iCommandSender.getHomeExactPosition("@home")
             } else {
                 if (strings.size > 1) {
                     iCommandSender.sendChatToPlayer(
@@ -44,11 +45,11 @@ class HomeCommand : CommandBase() {
                     return
                 }
 
-                coordinate = iCommandSender.getHomeCoordinates(strings[0]!!)
+                positionInfo = iCommandSender.getHomeExactPosition(strings[0]!!)
                 homeName = strings[0]
             }
 
-            if (coordinate == null) {
+            if (positionInfo == null) {
                 iCommandSender.sendChatToPlayer(
                     ChatMessageComponent
                         .createFromText(
@@ -63,18 +64,12 @@ class HomeCommand : CommandBase() {
 
                 return
             } else {
-                iCommandSender.setBackCoordinates(
-                    Triple(
-                        iCommandSender.posX,
-                        iCommandSender.posY,
-                        iCommandSender.posZ
-                    )
+                iCommandSender.setBackExactPosition(
+                    iCommandSender.getCurrentExactPositionInfo()
                 )
 
-                iCommandSender.setPositionAndUpdate(
-                    coordinate.first,
-                    coordinate.second,
-                    coordinate.third
+                iCommandSender.setPlayerToExactPositionInfo(
+                    positionInfo
                 )
 
                 iCommandSender.sendChatToPlayer(
@@ -155,13 +150,9 @@ class SetHomeCommand : CommandBase() {
                 strings[0]!!
             }
 
-            val coordinates = Triple(
-                iCommandSender.posX,
-                iCommandSender.posY,
-                iCommandSender.posZ
-            )
+            val positionInfos = iCommandSender.getCurrentExactPositionInfo()
 
-            iCommandSender.setHomeCoordinates(homeName, coordinates)
+            iCommandSender.setHomeExactPosition(homeName, positionInfos)
 
             iCommandSender.sendChatToPlayer(
                 ChatMessageComponent
@@ -287,9 +278,9 @@ class BackCommand : CommandBase() {
         }
 
         if (iCommandSender is IHomeCommandContext) {
-            val coordinate = iCommandSender.getBackCoordinates()
+            val positionInfo = iCommandSender.getBackExactPosition()
 
-            if (coordinate == null) {
+            if (positionInfo == null) {
                 iCommandSender.sendChatToPlayer(
                     ChatMessageComponent
                         .createFromText("No back location set.")
@@ -297,18 +288,12 @@ class BackCommand : CommandBase() {
                 )
                 return
             } else {
-                iCommandSender.setBackCoordinates(
-                    Triple(
-                        iCommandSender.posX,
-                        iCommandSender.posY,
-                        iCommandSender.posZ
-                    )
+                iCommandSender.setBackExactPosition(
+                    iCommandSender.getCurrentExactPositionInfo()
                 )
 
-                iCommandSender.setPositionAndUpdate(
-                    coordinate.first,
-                    coordinate.second,
-                    coordinate.third
+                iCommandSender.setPlayerToExactPositionInfo(
+                    positionInfo
                 )
 
                 iCommandSender.sendChatToPlayer(
