@@ -13,6 +13,7 @@
     "BlockFurnaceObsidianMixin",
     "BlockLeavesMixin",
     "BlockMixin",
+    "BlockTallGrassMixin",
     "ClientPlayerMixin",
     "ContainerEnchantmentMixin",
     "ContainerRepairMixin",

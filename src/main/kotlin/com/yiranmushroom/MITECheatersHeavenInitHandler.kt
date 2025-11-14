@@ -10,6 +10,5 @@ import fi.dy.masa.malilib.interfaces.IInitializationHandler
 class MITECheatersHeavenInitHandler : IInitializationHandler {
     override fun registerModHandlers() {
 
-
     }
 }

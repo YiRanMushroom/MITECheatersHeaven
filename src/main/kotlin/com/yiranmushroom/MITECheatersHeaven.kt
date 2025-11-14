@@ -6,6 +6,7 @@ import com.yiranmushroom.event.MCHEventListener
 import com.yiranmushroom.mixin_helper.EntityClientPlayerFlySpeedMixinHelper
 import com.yiranmushroom.mixin_helper.NightVision
 import com.yiranmushroom.network.C2S.C2SRequestOpenTrashCanPacket
+import com.yiranmushroom.ric_handlers.RICRegister
 import com.yiranmushroom.scripting.ScriptingEngine
 import fi.dy.masa.malilib.config.ConfigManager
 import fi.dy.masa.malilib.event.InitializationHandler
@@ -38,7 +39,7 @@ class MITECheatersHeaven : ModInitializer {
         //Register an event listening object
         MITEEvents.MITE_EVENT_BUS.register(MCHEventListener())
 
-//        MCHNetwork.init()
+        RICRegister.registerRICHandlers()
     }
 
     fun preInit() {
